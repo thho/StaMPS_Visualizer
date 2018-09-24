@@ -2,7 +2,7 @@
 
 A Shiny application for visualizing DInSAR results processed by StaMPS/MTI.
 
-Futher discussion about the application can be found in ESA's [Step-Forum](https://forum.step.esa.int/t/stamps-visualizer-snap-stamps-workflow/9613?u=thho)
+Further discussion about the application can be found in ESA's [Step-Forum](https://forum.step.esa.int/t/stamps-visualizer-snap-stamps-workflow/9613?u=thho)
 
 To run the application locally, follwing packages are requiered:
 
