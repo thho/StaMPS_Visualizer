@@ -1,0 +1,5 @@
+Title: StaMPS-Visualizer
+License: GNU
+Author: Thorsten Höser
+Type: Shiny
+Tags: remote sensing radar insar dinsar stamps snap
