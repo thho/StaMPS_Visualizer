@@ -95,12 +95,19 @@ function(input, output, session) {
   ## Interactive Map ###########################################
   
   # Create the map
-  #addProviderTiles('Thunderforest.Landscape')
     output$map <- renderLeaflet({
-    leaflet() %>% addProviderTiles('Esri.WorldImagery') %>% 
+    leaflet() %>% 
+    addTiles(group = "OSM Map") %>%
+    addProviderTiles('Esri.WorldImagery', group = "Satellite") %>% 
+        addLayersControl(
+        baseGroups = c("Satellite", "OSM Map"),
+          overlayGroups = c("Measurement Points"),
+          options = layersControlOptions(collapsed = T),
+          position = "topleft"
+        ) %>%
       setView(lng = 0, lat = 0, zoom = 3) %>%
       addScaleBar(position = "topright", 
-                  options =scaleBarOptions(maxWidth = 100, metric = T, imperial = F))# %>%
+                  options =scaleBarOptions(maxWidth = 100, metric = T, imperial = F))
     })
 
   
@@ -121,7 +128,8 @@ function(input, output, session) {
                  layerId = ps.loc[[stusi.ind]]$uid,
                  radius=5,
                  fillColor = colramp[as.numeric(cut(disp ,breaks = 10))],
-                 fillOpacity = 0.8, stroke = F) %>%
+                 fillOpacity = 0.8, stroke = F,
+                 group = "Measurement Points") %>%
               setView(lng = median(ps.loc[[stusi.ind]]$lon),
               lat = median(ps.loc[[stusi.ind]]$lat),
               zoom = 15)%>%
