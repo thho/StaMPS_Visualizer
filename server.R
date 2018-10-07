@@ -139,20 +139,45 @@ function(input, output, session) {
               layerId = "uid", opacity = 1)
   })
   
+  ##################plot TS for specific MP
+  
   observe({
     #date input
     in.date.event <- input$date
     orig.date <- as_date("0000-01-01")
     date.event <- as.numeric(in.date.event - orig.date)
-    #studysite input
+    #stusi input
     stusiBy <- input$stusi
     stusi.ind <- which(stusi == stusiBy)
-    click<-input$map_marker_click
-    if(is.null(click))
-      return()
-    text2<-paste("You've selected point ", click$id)
+    #marker input
+    click <- input$map_marker_click
+    if(is.null(click)){
+      ts <- ps.loc[[stusi.ind]][1, 5:ncol(ps.loc[[stusi.ind]])]
+      #create plot
+      output$psts <- renderPlot({
+        plot(t(ts) ~ dates.days[[stusi.ind]], type = "n",
+             ylab = "mm", xlab ="Date",
+             xlim = c(min(dates.days[[stusi.ind]]),
+                      max(dates.days[[stusi.ind]])),
+             ylim = c(min(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])]),
+                      max(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])])),
+             axes = F)
+        axis(side = 2)
+        plot.info <- par("xaxp")
+        tick.pos <- seq(plot.info[1], plot.info[2], length = plot.info[3]+1)
+        xlabs <- as_date(tick.pos, origin = "0000-01-01")
+        axis(side = 1, labels = xlabs, at = tick.pos)
+        grid(col = "grey64")
+        lines(t(ts) ~ dates.days[[stusi.ind]])
+        points(t(ts) ~ dates.days[[stusi.ind]],
+               pch = 19)
+        abline(v = date.event, lty = 2,
+               col = "red")
+        box(which = "plot")
+      })} else{
+    text <- paste("You've selected point ", click$id)
     ts <- ps.loc[[stusi.ind]][click$id, 5:ncol(ps.loc[[stusi.ind]])]
-    
+    #create plot
     output$psts <- renderPlot({
       plot(t(ts) ~ dates.days[[stusi.ind]], type = "n",
            ylab = "mm", xlab ="Date",
@@ -160,15 +185,12 @@ function(input, output, session) {
                     max(dates.days[[stusi.ind]])),
            ylim = c(min(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])]),
                     max(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])])),
-           axes = F
-      )
-      
+           axes = F)
       axis(side = 2)
       plot.info <- par("xaxp")
       tick.pos <- seq(plot.info[1], plot.info[2], length = plot.info[3]+1)
       xlabs <- as_date(tick.pos, origin = "0000-01-01")
       axis(side = 1, labels = xlabs, at = tick.pos)
-      
       grid(col = "grey64")
       lines(t(ts) ~ dates.days[[stusi.ind]])
       points(t(ts) ~ dates.days[[stusi.ind]],
@@ -177,9 +199,7 @@ function(input, output, session) {
              col = "red")
       box(which = "plot")
     })
-    
-    output$Click_text <- renderText({
-      text2
-    })
+    #redner outbut text
+    output$Click_text <- renderText({text})}
   })
 }
