@@ -5,8 +5,11 @@ library(lubridate)
 function(input, output, session) {
   
   #make stusiBy accessible outside observeEvent
+  stusiBy <- NULL
+  makeReactiveBinding("stusiBy")
+  
   stusitscBy <- NULL
-  makeReactiveBinding("stusitsBy")
+  makeReactiveBinding("stusitscBy")
   
   output$ts1 <- renderUI({
     stusitsc.ind <- which(stusi == stusitscBy)
@@ -45,6 +48,7 @@ function(input, output, session) {
     orig.datesc <- as_date("0000-01-01")
     date.eventsc <- as.numeric(in.date.eventsc - orig.datesc)
     #studysite and ts data
+    stusitscBy <<- input$stusitsc
     stusitsc.ind <- which(stusi == stusitscBy)
     tsdata1 <- ps.loc[[stusitsc.ind]][input$ts11, 5:ncol(ps.loc[[stusitsc.ind]])]
     tsdata2 <- ps.loc[[stusitsc.ind]][input$ts22, 5:ncol(ps.loc[[stusitsc.ind]])]
