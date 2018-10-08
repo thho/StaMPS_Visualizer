@@ -11,7 +11,7 @@ library(leaflet)
 stusi <- substr(dirs[2:length(dirs)], 9, 50)
 
 #setup navigation bar
-navbarPage("StaMPS-Visualizer 2.0", id="nav",
+navbarPage("StaMPS-Visualizer 2.1", id="nav",
            
            tabPanel("TS explorer",
                     div(class="outer",
@@ -22,17 +22,23 @@ navbarPage("StaMPS-Visualizer 2.0", id="nav",
                         ),
                         leafletOutput("map", width="100%", height="100%"),
                         absolutePanel(id = "controls", class = "panel panel-default", fixed = T,
-                                      draggable = TRUE, top = "auto", left = "auto", right = 20, bottom = 20,
+                                      draggable = T, top = "auto", left = "auto", right = 20, bottom = 20,
                                       width = 900, height = 800,
                                       h2("Single TS selection"),
-                                      fluidRow(column(6,
+                                      fluidRow(column(3,
                                                       selectInput("stusi", "Case Study", stusi,
-                                                                  selected = stusi[1], width = "500px")),
-                                               column(6,
+                                                                  selected = stusi[1], width = "200px")),
+                                               column(4,
                                                       dateInput('date',
                                                                 label = 'Date of event',
-                                                                value = '2017-06-24'#Sys.Date()
-                                                      ))),
+                                                                value = Sys.Date())),
+                                               column(4,
+                                                      selectInput('add.trend', 'Add Trendline',
+                                                                  choices = c('Connect MP' = 'ctrend',
+                                                                              'Linear Trend' = 'ltrend',
+                                                                              '2nd Order Polynomial Trend' = 'ptrend'), 
+                                                                selected = 'ctrend'))
+                                               ),
                                       plotOutput("psts", height = 600, width = 800),
                                       fluidRow(verbatimTextOutput("Click_text"))
                         )
