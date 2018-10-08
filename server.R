@@ -6,8 +6,7 @@ function(input, output, session) {
   
   #make stusiBy accessible outside observeEvent
   stusiBy <- NULL
-  makeReactiveBinding("stusiBy")
-  
+
   stusitscBy <- NULL
   makeReactiveBinding("stusitscBy")
   
