@@ -4,36 +4,35 @@ library(lubridate)
 
 function(input, output, session) {
   
+  #make stusiBy accessible outside observeEvent
+  stusitscBy <- NULL
+  makeReactiveBinding("stusitsBy")
+  
   output$ts1 <- renderUI({
-    stusitscBy <- input$stusitsc
     stusitsc.ind <- which(stusi == stusitscBy)
     selectInput('ts11', '1. Time Series',
                 c("Select TS" = NA, ps.loc[[stusitsc.ind]]$uid),
                 selected = NA)
   })
   output$ts2 <- renderUI({
-    stusitscBy <- input$stusitsc
     stusitsc.ind <- which(stusi == stusitscBy)
     selectInput('ts22', '2. Time Series',
                 c("Select TS" = NA, ps.loc[[stusitsc.ind]]$uid),
                 selected = NA)
   })
   output$ts3 <- renderUI({
-    stusitscBy <- input$stusitsc
     stusitsc.ind <- which(stusi == stusitscBy)
     selectInput('ts33', '3. Time Series',
                 c("Select TS" = NA, ps.loc[[stusitsc.ind]]$uid),
                 selected = NA)
   })
   output$ts4 <- renderUI({
-    stusitscBy <- input$stusitsc
     stusitsc.ind <- which(stusi == stusitscBy)
     selectInput('ts44', '4. Time Series',
                 c("Select TS" = NA, ps.loc[[stusitsc.ind]]$uid),
                 selected = NA)
   })
   output$ts5 <- renderUI({
-    stusitscBy <- input$stusitsc
     stusitsc.ind <- which(stusi == stusitscBy)
     selectInput('ts55', '5. Time Series',
                 c("Select TS" = NA, ps.loc[[stusitsc.ind]]$uid),
@@ -46,7 +45,6 @@ function(input, output, session) {
     orig.datesc <- as_date("0000-01-01")
     date.eventsc <- as.numeric(in.date.eventsc - orig.datesc)
     #studysite and ts data
-    stusitscBy <- input$stusitsc
     stusitsc.ind <- which(stusi == stusitscBy)
     tsdata1 <- ps.loc[[stusitsc.ind]][input$ts11, 5:ncol(ps.loc[[stusitsc.ind]])]
     tsdata2 <- ps.loc[[stusitsc.ind]][input$ts22, 5:ncol(ps.loc[[stusitsc.ind]])]
@@ -113,27 +111,26 @@ function(input, output, session) {
   
   #adding ps data selected for study site
   observe({
-    stusiBy <- input$stusi
+    stusiBy <<- input$stusi
     stusi.ind <- which(stusi == stusiBy)
     disp <- ps.loc[[stusi.ind]]$disp
     colramp <- rev(matlab.like(10))
-    colnum <- colorNumeric(colramp, 
+    colnum <- colorNumeric(colramp,
                            domain = c(min(ps.loc[[stusi.ind]]$disp),
                                       max(ps.loc[[stusi.ind]]$disp)))
     leafletProxy("map", data = ps.loc[[stusi.ind]]) %>%
-      #clearShapes() %>%
       clearMarkers() %>%
       addCircleMarkers(ps.loc[[stusi.ind]]$lon,
                  ps.loc[[stusi.ind]]$lat,
                  layerId = ps.loc[[stusi.ind]]$uid,
                  radius=5,
-                 fillColor = colramp[as.numeric(cut(disp ,breaks = 10))],
+                 fillColor = colramp[as.numeric(cut(disp, breaks = 10))],
                  fillOpacity = 0.8, stroke = F,
                  group = "Measurement Points") %>%
               setView(lng = median(ps.loc[[stusi.ind]]$lon),
               lat = median(ps.loc[[stusi.ind]]$lat),
               zoom = 15)%>%
-    addLegend("bottomleft", pal = colnum, 
+    addLegend("bottomleft", pal = colnum,
               values = ps.loc[[stusi.ind]]$disp,
               title = "mm/year",
               layerId = "uid", opacity = 1)
@@ -147,7 +144,6 @@ function(input, output, session) {
     orig.date <- as_date("0000-01-01")
     date.event <- as.numeric(in.date.event - orig.date)
     #stusi input
-    stusiBy <- input$stusi
     stusi.ind <- which(stusi == stusiBy)
     #marker input
     click <- input$map_marker_click
@@ -174,8 +170,10 @@ function(input, output, session) {
         abline(v = date.event, lty = 2,
                col = "red")
         box(which = "plot")
-      })} else{
-    text <- paste("You've selected point ", click$id)
+      })}else{
+        if(click$id > nrow(ps.loc[[stusi.ind]])){
+          click$id <- 1}else{click$id <- click$id}
+    text <- paste('You have selected point', click$id, 'from case study', stusiBy, sep = ' ' )
     ts <- ps.loc[[stusi.ind]][click$id, 5:ncol(ps.loc[[stusi.ind]])]
     #create plot
     output$psts <- renderPlot({
@@ -192,14 +190,28 @@ function(input, output, session) {
       xlabs <- as_date(tick.pos, origin = "0000-01-01")
       axis(side = 1, labels = xlabs, at = tick.pos)
       grid(col = "grey64")
-      lines(t(ts) ~ dates.days[[stusi.ind]])
+      if(input$add.trend == 'ctrend'){
+        lines(t(ts) ~ dates.days[[stusi.ind]])}else{
+          if(input$add.trend == 'ltrend'){
+            lmfit <- lm(t(ts) ~ dates.days[[stusi.ind]])
+            abline(lmfit, col = 'black')}else{
+              if(input$add.trend == 'ptrend'){
+                date.d <- dates.days[[stusi.ind]]
+                pfit <- lm(t(ts) ~ poly(date.d, 2, raw = TRUE))
+                xx <- seq(range(date.d)[1],
+                          range(date.d)[2],
+                          length.out = 250)
+                lines(xx, predict(pfit, data.frame(date.d = xx)), col = 'black')
+              }else{return()}
+            }
+        }
       points(t(ts) ~ dates.days[[stusi.ind]],
              pch = 19)
       abline(v = date.event, lty = 2,
              col = "red")
       box(which = "plot")
     })
-    #redner outbut text
+    #redner output text
     output$Click_text <- renderText({text})}
   })
 }
