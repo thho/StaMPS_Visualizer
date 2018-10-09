@@ -6,6 +6,8 @@ A Shiny application for visualizing DInSAR results processed by StaMPS/MTI.
 
 Further discussion about the application can be found in ESA's [Step-Forum](https://forum.step.esa.int/t/stamps-visualizer-snap-stamps-workflow/9613?u=thho)
 
+An example of the app is currently available online, hosted with a free shinyapps.io account. Therefore it may be that the app is not accessible if all active hours per month are exhausted. To work with the app and adding your own data locally, download or clone the repo. [StaMPS-Visualizer example](https://thho.shinyapps.io/StaMPS_Visualizer/)
+
 To run the application locally, following packages are requiered:
 
 ```{r install-packages eval=FALSE}
@@ -21,11 +23,11 @@ Copy paste the code to your R console, or run the R script *install_packages.R*
 
 <br/>
 
-*StaMPS/MTI-Visualizer* is a free application and comes with **absolutely no warrenty**. The application is distributed under the terms of the GNU General
-Public License, either Version 2, June 1991 or Version 3, June 2007. You are welcome to redistribute the application in its complete version. See further information on how to cite *StaMPS/MTI-Visualizer*.
+*StaMPS-Visualizer* is a free application and comes with **absolutely no warrenty**. The application is distributed under the terms of the GNU General
+Public License, either Version 2, June 1991 or Version 3, June 2007. You are welcome to redistribute the application in its complete version. See further information on how to cite *StaMPS-Visualizer*.
 
 
-## Citing the Application *StaMPS/MTI Visualizer*
+## Citing the Application *StaMPS-Visualizer*
 
 <br/>
 
