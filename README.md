@@ -1,10 +1,12 @@
 # StaMPS-Visualizer
 
+![](https://github.com/thho/StaMPS_Visualizer/blob/master/stamps_visualizer21_preview.png "StaMPS-Visualizer 2.1 preview")
+
 A Shiny application for visualizing DInSAR results processed by StaMPS/MTI.
 
 Further discussion about the application can be found in ESA's [Step-Forum](https://forum.step.esa.int/t/stamps-visualizer-snap-stamps-workflow/9613?u=thho)
 
-To run the application locally, follwing packages are requiered:
+To run the application locally, following packages are requiered:
 
 ```{r install-packages eval=FALSE}
 install.packages("leaflet")
