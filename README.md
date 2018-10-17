@@ -31,7 +31,7 @@ Public License, either Version 2, June 1991 or Version 3, June 2007. You are wel
 
 <br/>
 
-The application is part of a master thesis at the Department of Geography, Bonn University. To cite the application, cite the thesis including the application:
+The application is part of a [master thesis at the Department of Geography, Bonn University](https://doi.org/10.13140/RG.2.2.35085.59362). To cite the application, cite the thesis including the application:
 
 Bibtex:
 
@@ -41,6 +41,7 @@ Bibtex:
   title        = {Analysing the Capabilities and Limitations of {InSAR} using {Sentinel-1} Data for Landslide Detection and Monitoring},
   school       = {Department of Geography, Bonn University},
   year         = 2018,
-  address      = {Bonn}
+  address      = {Bonn},
+  doi          =  10.13140/RG.2.2.35085.59362
 }
 ```
