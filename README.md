@@ -2,7 +2,9 @@
 
 ![](https://github.com/thho/StaMPS_Visualizer/blob/master/stamps_visualizer21_preview.png "StaMPS-Visualizer 2.1 preview")
 
-A Shiny application for visualizing DInSAR results processed by StaMPS/MTI.
+A Shiny application for visualizing DInSAR results processed by [StaMPS/MTI](https://homepages.see.leeds.ac.uk/~earahoo/stamps/).
+
+Hooper A., Bekaert D. Spaans K. and M. Arikan (2012), Recent advances in SAR interferometry time series analysis for measuring crustal deformation, Tectonophysics, 514-517, pp.1-13. doi: 10.1016/j.tecto.2011.10.013
 
 Further discussion about the application can be found in ESA's [Step-Forum](https://forum.step.esa.int/t/stamps-visualizer-snap-stamps-workflow/9613?u=thho)
 
