@@ -44,6 +44,6 @@ Bibtex:
   school       = {Department of Geography, Bonn University},
   year         = 2018,
   address      = {Bonn},
-  doi          =  10.13140/RG.2.2.35085.59362
+  doi          = {10.13140/RG.2.2.35085.59362}
 }
 ```
