@@ -230,10 +230,32 @@ div.tocify {
 <p>To explore and plot costume data, you have to export a dataset from StaMPS-Matlab in a specific .csv table, create a folder with the name of the case study in the <em>stusi</em> folder of the application and put the .csv table in this folder. After that, reload <strong>StaMPS-Visualizer</strong> to choose the new dataset.</p>
 <p>To prepare the dataset in StaMPS/MTI-Matlab run your process in Matlab until step 6 or further. Create a ‘ts’ plot where you choose a region of interest you want to export. I recommend a search radius of 500m but this depends on point density and study site. If you have trouble because of an error telling something about different dimension during the export, use a search radius that is large enough to fit all your PS in it. We can use this huge table later in R and make a subset there which is easier. In both cases, this action will create some needed objects in Matlab. Which ps_plot you create depends on you, ‘V-DO’, ‘V-D’, ‘V-O’ etc. but be sure that you repeat the same plot without ‘ts’ but with -1 argument after that, see line 1, 3 and 4 in the chunk below. In this example the ‘v-do’ argument must be the same in all lines, adapt it to your chosen method. Additional data is prepared in this step, similar to the googleearth-kml export in StaMPS/MTI.<br />
 The last adaption is optional, you can change the name of the outpufile.csv in the last line. The file will be written into your SMALL_BASELINES directory. After the export, move the .csv file to your case study folder in <em>stusi</em> directory of the StaMSP-Visualizer application.</p>
+<p><strong>Use this Matlab Code for exporting a csv table from StamPS 4.1 for older versions see below</strong></p>
 <pre class="octave"><code>ps_plot('v-doa', 'ts');
 load parms.mat;
 ps_plot('v-doa', -1);
-load ps_plot_v-doa.mat
+load ps_plot_v-doa.mat;
+lon2_str = cellstr(num2str(lon2));
+lat2_str = cellstr(num2str(lat2));
+lonlat2_str = strcat(lon2_str, lat2_str);
+
+lonlat_str = strcat(cellstr(num2str(lonlat(:,1))), cellstr(num2str(lonlat(:,2))));
+ind = ismember(lonlat_str, lonlat2_str);
+
+disp = ph_disp(ind);
+disp_ts = ph_mm(ind,:);
+export_res = [lon2 lat2 disp disp_ts];
+
+metarow = [ref_centre_lonlat NaN transpose(day)-1];
+k = 0;
+export_res = [export_res(1:k,:); metarow; export_res(k+1:end,:)];
+export_res = table(export_res);
+writetable(export_res,'stamps_tsexport.csv')</code></pre>
+<p><strong>Use this Matlab code for exporting a csv table for StamPS 3.x</strong></p>
+<pre class="octave"><code>ps_plot('v-doa', 'ts');
+load parms.mat;
+ps_plot('v-doa', -1);
+load ps_plot_v-doa.mat;
 lon2_str = cellstr(num2str(lon2));
 lat2_str = cellstr(num2str(lat2));
 lonlat2_str = strcat(lon2_str, lat2_str);
@@ -243,11 +265,16 @@ ind = ismember(lonlat_str, lonlat2_str);
 
 disp = ph_disp(ind);
 export_res = [lon2 lat2 disp ts];
+
 metarow = [ref_centre_lonlat NaN transpose(day)-1];
 k = 0;
 export_res = [export_res(1:k,:); metarow; export_res(k+1:end,:)];
 export_res = table(export_res);
 writetable(export_res,'stamps_tsexport.csv')</code></pre>
+</div>
+<div id="troubleshooting" class="section level2">
+<h2>Troubleshooting</h2>
+<p>If there is a high density of MP (measurement points) sometimes an error occurs like <strong>horzcat matrix is not consist with each other</strong>. To avoid this error, make a new ts plot and select a very large search radius which includes all MP, export this csv table and use the following R script and a .kml polygon which is describes your region of interest to subset the table afterwards.</p>
 <p>If the export is not a subset of some measurement points but all points, because you encountered errors during exporting and set the search radius very high, use this R script to spatially subset the csv. table afterwards:</p>
 <pre class="r"><code>###########################
 ###subset ts plot export###
