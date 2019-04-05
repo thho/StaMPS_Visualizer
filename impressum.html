@@ -68,9 +68,7 @@ h6 {
 </style>
 
 
-</head>
 
-<body>
 
 <style type="text/css">
 .main-container {
@@ -95,22 +93,92 @@ img {
 button.code-folding-btn:focus {
   outline: none;
 }
+summary {
+  display: list-item;
+}
 </style>
 
 
 
-<div class="container-fluid main-container">
-
 <!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
 });
 </script>
 
 <!-- code folding -->
 
 
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
 
 
 
@@ -126,7 +194,7 @@ $(document).ready(function () {
 <div id="about-the-app-and-disclaimer" class="section level1">
 <h1>About the App and Disclaimer</h1>
 <p><br /></p>
-<p><em>StaMPS-Visualizer</em> is a free application and comes with <strong>absolutely no warrenty</strong>. The application is distributed under the terms of the GNU General Public License, either Version 2, June 1991 or Version 3, June 2007. You are welcome to redistribute the application in its complete version. See further information on how to cite <em>StaMPS-Visualizer</em>.</p>
+<p><em>StaMPS-Visualizer</em> is a free application and comes with <strong>absolutely no warranty</strong>. The application is distributed under the terms of the GNU General Public License, either Version 2, June 1991 or Version 3, June 2007. You are welcome to redistribute the application in its complete version. See further information on how to cite <em>StaMPS-Visualizer</em>.</p>
 </div>
 <div id="citing-the-application-stamps-visualizer" class="section level1">
 <h1>Citing the Application <em>StaMPS-Visualizer</em></h1>
