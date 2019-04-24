@@ -71,9 +71,7 @@ h6 {
 </style>
 
 
-</head>
 
-<body>
 
 <style type="text/css">
 .main-container {
@@ -98,21 +96,82 @@ img {
 button.code-folding-btn:focus {
   outline: none;
 }
+summary {
+  display: list-item;
+}
 </style>
 
 
 
-<div class="container-fluid main-container">
-
 <!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
 });
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
 </script>
 
 <!-- code folding -->
-
 
 
 
@@ -201,6 +260,16 @@ div.tocify {
 
 </style>
 
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
 <!-- setup 3col/9col grid for toc_float and main content  -->
 <div class="row-fluid">
 <div class="col-xs-12 col-sm-4 col-md-3">
@@ -227,9 +296,9 @@ div.tocify {
 <p>In the <em>Single TS Selection</em> panel you can choose a case study. The map is automatically adjusted to show the data of the case study. In the map, you can click on each marker (colored points) and a plot of its deformation time series will be plotted in the <em>Single TS Selection</em> panel. The number of the selected point is also shown below the plot, this number may be interesting for use in <strong>TS Comparison</strong>. To add a vertical line of an event of interest to the TS plot choose a date within the time line of the TS plot.</p>
 <div id="adding-costume-case-study-data" class="section level2">
 <h2>Adding Costume Case Study Data</h2>
-<p>To explore and plot costume data, you have to export a dataset from StaMPS-Matlab in a specific .csv table, create a folder with the name of the case study in the <em>stusi</em> folder of the application and put the .csv table in this folder. After that, reload <strong>StaMPS-Visualizer</strong> to choose the new dataset.</p>
-<p>To prepare the dataset in StaMPS/MTI-Matlab run your process in Matlab until step 6 or further. Create a ‘ts’ plot where you choose a region of interest you want to export. I recommend a search radius of 500m but this depends on point density and study site. If you have trouble because of an error telling something about different dimension during the export, use a search radius that is large enough to fit all your PS in it. We can use this huge table later in R and make a subset there which is easier. In both cases, this action will create some needed objects in Matlab. Which ps_plot you create depends on you, ‘V-DO’, ‘V-D’, ‘V-O’ etc. but be sure that you repeat the same plot without ‘ts’ but with -1 argument after that, see line 1, 3 and 4 in the chunk below. In this example the ‘v-do’ argument must be the same in all lines, adapt it to your chosen method. Additional data is prepared in this step, similar to the googleearth-kml export in StaMPS/MTI.<br />
-The last adaption is optional, you can change the name of the outpufile.csv in the last line. The file will be written into your SMALL_BASELINES directory. After the export, move the .csv file to your case study folder in <em>stusi</em> directory of the StaMSP-Visualizer application.</p>
+<p>To explore and plot costume data, you have to export a dataset from StaMPS-Matlab in a specific .csv table and add this to the <em>stusi</em> folder of the application. After that, reload <strong>StaMPS-Visualizer</strong> to choose the new dataset.</p>
+<p>To prepare the dataset in StaMPS/MTI-Matlab run your process in Matlab until step 6 or further. Create a ‘ts’ plot <strong>and choose a search radius in the up fireing window and click in it to select the points you want to export</strong>. I recommend a search radius of 500m but this depends on point density, study site and research question. Be aware, that a larger area can cause your machine to crash, due to the high amount of points which it must render in the visualizer. If you have trouble because of an error telling something about different dimension during the export, use a search radius that is large enough to fit all your PS in it, mostly 100000. We can use this huge table later in R and make a subset there, which is easier. In both cases, this action will create some needed objects in Matlab. Which ps_plot you create depends on you, ‘V-DO’, ‘V-D’, ‘V-O’ etc. but be sure that you repeat the same plot without ‘ts’ but with -1 argument after that, see line 1, 3 and 4 in the chunk below. In this example the ‘v-do’ argument must be the same in all lines, adapt it to your chosen method. Additional data is prepared in this step, similar to the googleearth-kml export in StaMPS/MTI.<br />
+The last adaption is optional, you can change the name of the outpufile.csv in the last line. The file will be written into your SMALL_BASELINES or INSAR_master_date directory, depending on the workflow. After the export, move the .csv file to the <em>stusi</em> directory of the StaMSP-Visualizer application.</p>
 <p><strong>Use this Matlab Code for exporting a csv table from StamPS 4.1 for older versions see below</strong></p>
 <pre class="octave"><code>ps_plot('v-doa', 'ts');
 load parms.mat;
@@ -274,8 +343,7 @@ writetable(export_res,'stamps_tsexport.csv')</code></pre>
 </div>
 <div id="troubleshooting" class="section level2">
 <h2>Troubleshooting</h2>
-<p>If there is a high density of MP (measurement points) sometimes an error occurs like <strong>horzcat matrix is not consist with each other</strong>. To avoid this error, make a new ts plot and select a very large search radius which includes all MP, export this csv table and use the following R script and a .kml polygon which is describes your region of interest to subset the table afterwards.</p>
-<p>If the export is not a subset of some measurement points but all points, because you encountered errors during exporting and set the search radius very high, use this R script to spatially subset the csv. table afterwards:</p>
+<p>If there is a high density of MP (measurement points) sometimes an error occurs like <strong>horzcat matrix is not consist with each other</strong>. To avoid this error, make a new ts plot and select a very large search radius which includes all MP, export this csv table and use the following R script and a .kml polygon which describes your region of interest to subset the table afterwards.</p>
 <pre class="r"><code>###########################
 ###subset ts plot export###
 ###########################
@@ -286,7 +354,7 @@ library(rgeos)
 #read subsetpolygon
 roi &lt;- readOGR(&quot;/home/user/studysite/roi.kml&quot;)
 #read exported .csv
-pnts &lt;- read.csv(&quot;/home/user/ISNAR_20170310/20170310_all.csv&quot;)
+pnts &lt;- read.csv(&quot;/home/user/ISNAR_master_date/stamps_tsexport.csv&quot;)
 #create spatial object
 lon &lt;- pnts$export_res_.1[2:nrow(pnts)]
 lat &lt;- pnts$export_res_.2[2:nrow(pnts)]
@@ -298,7 +366,8 @@ pnts.sub &lt;- pnts.geo[roi, ]
 #create table from spatial subset
 sub.csv &lt;- rbind(pnts[1, ], pnts.sub@data)
 #export csv to StaMPS-Visualizer application
-write.table(sub.csv, file = &quot;/home/user/stamps_visualizer/stusi/newstudysite/20170310.csv&quot;,
+#adapt path to your machine
+write.table(sub.csv, file = &quot;/home/user/stamps_visualizer/stusi/stamps_tsexport.csv&quot;,
             row.names = F, col.names = T, sep = &quot;,&quot;)</code></pre>
 </div>
 </div>
