@@ -8,7 +8,7 @@ library(lubridate)
 library(leaflet)
 
 #prepare study site name
-stusi <- substr(dirs[2:length(dirs)], 9, 50)
+#stusi <- substr(dirs[2:length(dirs)], 9, 50)
 
 #setup navigation bar
 navbarPage("StaMPS-Visualizer 2.1", id="nav",
