@@ -6,7 +6,7 @@
 library(lubridate)
 
 #looking for study site data in stusi folder
-dirs <- list.dirs("./stusi")
+dat.path <- list.files("./stusi/")
 
 #prepare objects to read data
 ps.loc <- list()
@@ -15,9 +15,8 @@ dates.date <- list()
 ref.points <- list()
 
 #read data into R
-for(i in 1:(length(dirs)-1)){
-  dat.path <- list.files(dirs[i+1], pattern = ".csv")
-  dat <- read.csv(paste(dirs[i+1], dat.path, sep = "/"))
+for(i in 1:length(dat.path)){
+  dat <- read.csv(paste("./stusi/", dat.path[i], sep = ""))
   dates.days[[i]] <- as.vector(t(dat[1, 4:ncol(dat)]))
   dates.date[[i]] <- as_date(dates.days[[i]], origin = "0000-01-01")
   ref.points[[i]] <- as.vector(t(dat[1, 1:2]))
@@ -29,4 +28,7 @@ for(i in 1:(length(dirs)-1)){
 }
 
 #prepare study site name
-stusi <- substr(dirs[2:length(dirs)], 9, 50)
+str.rev <- function(x){sapply(lapply(strsplit(x, NULL), rev), paste, collapse = "")}
+stusi <- str.rev(dat.path)
+stusi <- substr(stusi, 5, 50)
+stusi <- str.rev(stusi)
