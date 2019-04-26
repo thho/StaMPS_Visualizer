@@ -96,18 +96,23 @@ function(input, output, session) {
   ## Interactive Map ###########################################
   
   # Create the map
+  
+  #in order to add WMS tiels, see the comments below
     output$map <- renderLeaflet({
     leaflet() %>%
         addTiles(group = "OSM Map") %>%
         addProviderTiles('Esri.WorldImagery',
                          group = "ESRI World Satellite") %>%
-        addWMSTiles("https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
-          layers = "0",
-          group = "Google Satellite",
-          options = WMSTileOptions(format = "image/png", transparent = F),
-          attribution = "") %>%
+        #uncomment the following lines in order to add WMS tiels and config them to your needs
+        #here is a example of a WMS url to some well known services
+        #https://stackoverflow.com/questions/9394190/leaflet-map-api-with-google-satellite-layer
+        # addWMSTiles("https://url/to/WMS",
+        #   layers = "0",
+        #   group = "WMS Tiles",
+        #   options = WMSTileOptions(format = "image/png", transparent = F),
+        #   attribution = "a propper attribution to the service") %>%
         addLayersControl(
-        baseGroups = c("ESRI World Satellite", "Google Satellite", "OSM Map"),
+        baseGroups = c("ESRI World Satellite", "OSM Map"), #add the "WMS Tiles" string defined above with group = to the list 
           overlayGroups = c("Measurement Points"),
           options = layersControlOptions(collapsed = T),
           position = "topleft"
