@@ -97,21 +97,27 @@ function(input, output, session) {
   
   # Create the map
     output$map <- renderLeaflet({
-    leaflet() %>% 
-    addTiles(group = "OSM Map") %>%
-    addProviderTiles('Esri.WorldImagery', group = "Satellite") %>% 
+    leaflet() %>%
+        addTiles(group = "OSM Map") %>%
+        addProviderTiles('Esri.WorldImagery',
+                         group = "ESRI World Satellite") %>%
+        addWMSTiles("https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
+          layers = "0",
+          group = "Google Satellite",
+          options = WMSTileOptions(format = "image/png", transparent = F),
+          attribution = "") %>%
         addLayersControl(
-        baseGroups = c("Satellite", "OSM Map"),
+        baseGroups = c("ESRI World Satellite", "Google Satellite", "OSM Map"),
           overlayGroups = c("Measurement Points"),
           options = layersControlOptions(collapsed = T),
           position = "topleft"
         ) %>%
       setView(lng = 0, lat = 0, zoom = 3) %>%
-      addScaleBar(position = "topright", 
+      addScaleBar(position = "topright",
                   options =scaleBarOptions(maxWidth = 100, metric = T, imperial = F))
     })
 
-  
+
   #adding ps data selected for study site
   observe({
     stusiBy <<- input$stusi
