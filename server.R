@@ -5,7 +5,7 @@ library(lubridate)
 function(input, output, session) {
   
   #make stusiBy accessible outside observeEvent
-  stusiBy <- NULL
+  #stusiBy <- NULL
 
   stusitscBy <- NULL
   makeReactiveBinding("stusitscBy")
@@ -160,7 +160,7 @@ function(input, output, session) {
     #stusi input
     stusi.ind <- which(stusi == stusiBy)
     #marker input
-    click <- input$map_marker_click
+    click <<- input$map_marker_click
     if(is.null(click)){
       ts <- ps.loc[[stusi.ind]][1, 5:ncol(ps.loc[[stusi.ind]])]
       #create plot
@@ -228,4 +228,83 @@ function(input, output, session) {
     #redner output text
     output$Click_text <- renderText({text})}
   })
+#}
+
+##################plot subtracted offset TS for specific MP
+
+observeEvent(input$sub.offset, {
+  #date input
+  in.date.event <- input$date
+  orig.date <- as_date("0000-01-01")
+  date.event <- as.numeric(in.date.event - orig.date)
+  #stusi input
+  stusi.ind <- which(stusi == stusiBy)
+    if(is.null(click)){
+      ts <- ps.loc[[stusi.ind]][1, 5:ncol(ps.loc[[stusi.ind]])]
+      ts <- ts - ts[1,1]
+      #create plot
+      output$psts <- renderPlot({
+        plot(t(ts) ~ dates.days[[stusi.ind]], type = "n",
+             ylab = "mm", xlab ="Date",
+             xlim = c(min(dates.days[[stusi.ind]]),
+                      max(dates.days[[stusi.ind]])),
+             ylim = c(min(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])]),
+                      max(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])])),
+             axes = F)
+        axis(side = 2)
+        plot.info <- par("xaxp")
+        tick.pos <- seq(plot.info[1], plot.info[2], length = plot.info[3]+1)
+        xlabs <- as_date(tick.pos, origin = "0000-01-01")
+        axis(side = 1, labels = xlabs, at = tick.pos)
+        grid(col = "grey64")
+        lines(t(ts) ~ dates.days[[stusi.ind]])
+        points(t(ts) ~ dates.days[[stusi.ind]],
+               pch = 19)
+        abline(v = date.event, lty = 2,
+               col = "red")
+        box(which = "plot")
+      })}else{
+        if(click$id > nrow(ps.loc[[stusi.ind]])){
+          click$id <- 1}else{click$id <- click$id}
+        text <- paste('You have selected point', click$id, 'from case study', stusiBy, sep = ' ' )
+        ts <- ps.loc[[stusi.ind]][click$id, 5:ncol(ps.loc[[stusi.ind]])]
+        offset <- ts[1,1]
+        ts <- ts - offset
+        #create plot
+        output$psts <- renderPlot({
+          plot(t(ts) ~ dates.days[[stusi.ind]], type = "n",
+               ylab = "mm", xlab ="Date",
+               xlim = c(min(dates.days[[stusi.ind]]),
+                        max(dates.days[[stusi.ind]])),
+               ylim = c(min(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])])-offset,
+                        max(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])])-offset),
+               axes = F)
+          axis(side = 2)
+          plot.info <- par("xaxp")
+          tick.pos <- seq(plot.info[1], plot.info[2], length = plot.info[3]+1)
+          xlabs <- as_date(tick.pos, origin = "0000-01-01")
+          axis(side = 1, labels = xlabs, at = tick.pos)
+          grid(col = "grey64")
+          if(input$add.trend == 'ctrend'){
+            lines(t(ts) ~ dates.days[[stusi.ind]])}else{
+              if(input$add.trend == 'ltrend'){
+                lmfit <- lm(t(ts) ~ dates.days[[stusi.ind]])
+                abline(lmfit, col = 'black')}else{
+                  if(input$add.trend == 'ptrend'){
+                    date.d <- dates.days[[stusi.ind]]
+                    pfit <- lm(t(ts) ~ poly(date.d, 2, raw = TRUE))
+                    xx <- seq(range(date.d)[1],
+                              range(date.d)[2],
+                              length.out = 250)
+                    lines(xx, predict(pfit, data.frame(date.d = xx)), col = 'black')
+                  }else{return()}
+                }
+            }
+          points(t(ts) ~ dates.days[[stusi.ind]],
+                 pch = 19)
+          abline(v = date.event, lty = 2,
+                 col = "red")
+          box(which = "plot")
+        })}
+      })
 }

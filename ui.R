@@ -39,6 +39,10 @@ navbarPage("StaMPS-Visualizer 2.1", id="nav",
                                                                               '2nd Order Polynomial Trend' = 'ptrend'), 
                                                                 selected = 'ctrend'))
                                                ),
+                                      fluidRow(column(3,
+                                                      actionButton('sub.offset',
+                                                                   label = 'Subtr. Offset'))
+                                               ),
                                       plotOutput("psts", height = 600, width = 800),
                                       fluidRow(verbatimTextOutput("Click_text"))
                         )
