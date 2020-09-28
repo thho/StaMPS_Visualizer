@@ -21,12 +21,11 @@ install.packages("colorRamps")
 
 Copy paste the code to your R console, or run the R script *install_packages.R*
 
-## About the App and Disclaimer
+## Disclaimer
 
 <br/>
 
-*StaMPS-Visualizer* is a free application and comes with **absolutely no warranty**. The application is distributed under the terms of the GNU General
-Public License, either Version 2, June 1991 or Version 3, June 2007. You are welcome to redistribute the application in its complete version. See further information on how to cite *StaMPS-Visualizer*.
+*StaMPS-Visualizer* is a free application and comes with **absolutely no warranty**.
 
 
 ## Citing the Application *StaMPS-Visualizer*
