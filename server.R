@@ -125,6 +125,7 @@ function(input, output, session) {
 
   #adding ps data selected for study site
   observe({
+    #prepare PS stusi data
     stusiBy <<- input$stusi
     stusi.ind <- which(stusi == stusiBy)
     disp <- ps.loc[[stusi.ind]]$disp
@@ -132,22 +133,61 @@ function(input, output, session) {
     colnum <- colorNumeric(colramp,
                            domain = c(min(ps.loc[[stusi.ind]]$disp),
                                       max(ps.loc[[stusi.ind]]$disp)))
-    leafletProxy("map", data = ps.loc[[stusi.ind]]) %>%
-      clearMarkers() %>%
-      addCircleMarkers(ps.loc[[stusi.ind]]$lon,
-                 ps.loc[[stusi.ind]]$lat,
-                 layerId = ps.loc[[stusi.ind]]$uid,
-                 radius=5,
-                 fillColor = colramp[as.numeric(cut(disp, breaks = 10))],
-                 fillOpacity = 0.8, stroke = F,
-                 group = "Measurement Points") %>%
-              setView(lng = median(ps.loc[[stusi.ind]]$lon),
-              lat = median(ps.loc[[stusi.ind]]$lat),
-              zoom = 15)%>%
-    addLegend("bottomleft", pal = colnum,
-              values = ps.loc[[stusi.ind]]$disp,
-              title = "mm/year",
-              layerId = "uid", opacity = 1)
+    #prepare marker info data
+    eventBy <- input$event.marker
+    if(eventBy == "---"){
+      #add circle and markers
+      leafletProxy("map", data = ps.loc[[stusi.ind]]) %>%
+        clearMarkers() %>%
+        #add PS circles with color ramp
+        addCircleMarkers(ps.loc[[stusi.ind]]$lon,
+                         ps.loc[[stusi.ind]]$lat,
+                         layerId = ps.loc[[stusi.ind]]$uid,
+                         radius=5,
+                         fillColor = colramp[as.numeric(cut(disp, breaks = 10))],
+                         fillOpacity = 0.8, stroke = F,
+                         group = "Measurement Points") %>%
+        setView(lng = median(ps.loc[[stusi.ind]]$lon),
+                lat = median(ps.loc[[stusi.ind]]$lat),
+                zoom = 15)%>%
+        setView(lng = median(ps.loc[[stusi.ind]]$lon),
+                lat = median(ps.loc[[stusi.ind]]$lat),
+                zoom = 15)%>%
+        addLegend("bottomleft", pal = colnum,
+                  values = ps.loc[[stusi.ind]]$disp,
+                  title = "mm/year",
+                  layerId = "uid", opacity = 1)
+    }else{
+      event.ind <- which(event == eventBy) - 1
+      #add circle and markers
+      leafletProxy("map", data = ps.loc[[stusi.ind]]) %>%
+        clearMarkers() %>%
+        #add PS circles with color ramp
+        addCircleMarkers(ps.loc[[stusi.ind]]$lon,
+                         ps.loc[[stusi.ind]]$lat,
+                         layerId = ps.loc[[stusi.ind]]$uid,
+                         radius=5,
+                         fillColor = colramp[as.numeric(cut(disp, breaks = 10))],
+                         fillOpacity = 0.8, stroke = F,
+                         group = "Measurement Points") %>%
+        setView(lng = median(ps.loc[[stusi.ind]]$lon),
+                lat = median(ps.loc[[stusi.ind]]$lat),
+                zoom = 15)%>%
+        #add event info markers with pop-up
+        addMarkers(event.loc[[event.ind]]$lon,
+                   event.loc[[event.ind]]$lat,
+                   layerId = ps.loc[[stusi.ind]]$uid,
+                   label = event.info[[event.ind]],
+                   icon = event.icon) %>%
+        setView(lng = median(ps.loc[[stusi.ind]]$lon),
+                lat = median(ps.loc[[stusi.ind]]$lat),
+                zoom = 15)%>%
+        addLegend("bottomleft", pal = colnum,
+                  values = ps.loc[[stusi.ind]]$disp,
+                  title = "mm/year",
+                  layerId = "uid", opacity = 1)
+    }
+    
   })
   
   ##################plot TS for specific MP

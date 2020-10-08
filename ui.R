@@ -11,7 +11,7 @@ library(leaflet)
 #stusi <- substr(dirs[2:length(dirs)], 9, 50)
 
 #setup navigation bar
-navbarPage("StaMPS-Visualizer 2.1", id="nav",
+navbarPage("StaMPS-Visualizer 3.0-beta", id="nav",
            
            tabPanel("TS explorer",
                     div(class="outer",
@@ -23,7 +23,7 @@ navbarPage("StaMPS-Visualizer 2.1", id="nav",
                         leafletOutput("map", width="100%", height="100%"),
                         absolutePanel(id = "controls", class = "panel panel-default", fixed = T,
                                       draggable = T, top = "auto", left = "auto", right = 20, bottom = 20,
-                                      width = 900, height = 800,
+                                      width = 900, height = 850,
                                       h2("Single TS selection"),
                                       fluidRow(column(3,
                                                       selectInput("stusi", "Case Study", stusi,
@@ -40,6 +40,11 @@ navbarPage("StaMPS-Visualizer 2.1", id="nav",
                                                                 selected = 'ctrend'))
                                                ),
                                       fluidRow(column(3,
+                                                      selectInput('event.marker', label = 'Event Marker',
+                                                                  event,
+                                                                  selected = event[1],
+                                                                  width = "200px")),
+                                               column(4,
                                                       actionButton('sub.offset',
                                                                    label = 'Subtr. Offset'))
                                                ),
