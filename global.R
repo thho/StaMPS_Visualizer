@@ -63,6 +63,7 @@ event <- c("---", event)
 #tidy up
 rm(dat)
 
+library(leaflet)
 #load event marker icon
 event.icon <- makeIcon("./icons/event_marker_pin.png",
                        iconWidth = 15,
