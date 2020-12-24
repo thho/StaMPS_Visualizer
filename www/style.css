@@ -1,0 +1,24 @@
+/* IKONOS Archiver */
+
+/* font */
+body, label, input, button, select { 
+  font-family: 'Helvetica', sans-serif !important;
+  font-weight: 400 !important;
+}
+
+h1, h2, h3, h4 { font-weight: 400; }
+
+
+/* map */
+/* the classes "querymap" are definde in ui.R */
+#querymap {
+  height: calc(100vh - 80px) !important;  
+}
+
+/* search tool panel */
+#controls {
+  /* appearance */
+  background-color: white;
+  padding: 20px 20px 20px 20px;
+  cursor: move;
+}
