@@ -10,88 +10,88 @@ function(input, output, session) {
   stusitscBy <- NULL
   makeReactiveBinding("stusitscBy")
   
-  output$ts1 <- renderUI({
-    stusitsc.ind <- which(stusi == stusitscBy)
-    selectInput('ts11', '1. Time Series',
-                c("Select TS" = NA, ps.loc[[stusitsc.ind]]$uid),
-                selected = NA)
-  })
-  output$ts2 <- renderUI({
-    stusitsc.ind <- which(stusi == stusitscBy)
-    selectInput('ts22', '2. Time Series',
-                c("Select TS" = NA, ps.loc[[stusitsc.ind]]$uid),
-                selected = NA)
-  })
-  output$ts3 <- renderUI({
-    stusitsc.ind <- which(stusi == stusitscBy)
-    selectInput('ts33', '3. Time Series',
-                c("Select TS" = NA, ps.loc[[stusitsc.ind]]$uid),
-                selected = NA)
-  })
-  output$ts4 <- renderUI({
-    stusitsc.ind <- which(stusi == stusitscBy)
-    selectInput('ts44', '4. Time Series',
-                c("Select TS" = NA, ps.loc[[stusitsc.ind]]$uid),
-                selected = NA)
-  })
-  output$ts5 <- renderUI({
-    stusitsc.ind <- which(stusi == stusitscBy)
-    selectInput('ts55', '5. Time Series',
-                c("Select TS" = NA, ps.loc[[stusitsc.ind]]$uid),
-                selected = NA)
-  })
-  
-  observe({
-    #date input
-    in.date.eventsc <- input$datesc
-    orig.datesc <- as_date("0000-01-01")
-    date.eventsc <- as.numeric(in.date.eventsc - orig.datesc)
-    #studysite and ts data
-    stusitscBy <<- input$stusitsc
-    stusitsc.ind <- which(stusi == stusitscBy)
-    tsdata1 <- ps.loc[[stusitsc.ind]][input$ts11, 5:ncol(ps.loc[[stusitsc.ind]])]
-    tsdata2 <- ps.loc[[stusitsc.ind]][input$ts22, 5:ncol(ps.loc[[stusitsc.ind]])]
-    tsdata3 <- ps.loc[[stusitsc.ind]][input$ts33, 5:ncol(ps.loc[[stusitsc.ind]])]
-    tsdata4 <- ps.loc[[stusitsc.ind]][input$ts44, 5:ncol(ps.loc[[stusitsc.ind]])]
-    tsdata5 <- ps.loc[[stusitsc.ind]][input$ts55, 5:ncol(ps.loc[[stusitsc.ind]])]
-    
-    output$tscomp <- renderPlot({
-      plot(t(tsdata1) ~ dates.days[[stusitsc.ind]], type = "n",
-           ylab = "mm", xlab ="Date",
-           xlim = c(min(dates.days[[stusitsc.ind]]),
-                    max(dates.days[[stusitsc.ind]])),
-           ylim = c(min(ps.loc[[stusitsc.ind]][, 5:ncol(ps.loc[[stusitsc.ind]])]),
-                    max(ps.loc[[stusitsc.ind]][, 5:ncol(ps.loc[[stusitsc.ind]])])),
-           axes = F)
-      
-      axis(side = 2)
-      plot.info <- par("xaxp")
-      tick.pos <- seq(plot.info[1], plot.info[2], length = plot.info[3]+1)
-      xlabs <- as_date(tick.pos, origin = "0000-01-01")
-      axis(side = 1, labels = xlabs, at = tick.pos)
-      grid(col = "grey64")
-      
-      lines(t(tsdata1) ~ dates.days[[stusitsc.ind]], col = "red")
-      points(t(tsdata1) ~ dates.days[[stusitsc.ind]],
-             pch = 19, col = "red")
-      lines(t(tsdata2) ~ dates.days[[stusitsc.ind]], col = "blue")
-      points(t(tsdata2) ~ dates.days[[stusitsc.ind]],
-             pch = 19, col = "blue")
-      lines(t(tsdata3) ~ dates.days[[stusitsc.ind]], col = "darkgreen")
-      points(t(tsdata3) ~ dates.days[[stusitsc.ind]],
-             pch = 19, col = "darkgreen")
-      lines(t(tsdata4) ~ dates.days[[stusitsc.ind]], col = "black")
-      points(t(tsdata4) ~ dates.days[[stusitsc.ind]],
-             pch = 19, col = "black")
-      lines(t(tsdata5) ~ dates.days[[stusitsc.ind]], col = "cyan")
-      points(t(tsdata5) ~ dates.days[[stusitsc.ind]],
-             pch = 19, col = "cyan")
-      abline(v = date.eventsc, lty = 2,
-             col = "red")
-      box(which = "plot")
-      })
-
-  })
+  # output$ts1 <- renderUI({
+  #   stusitsc.ind <- which(stusi == stusitscBy)
+  #   selectInput('ts11', '1. Time Series',
+  #               c("Select TS" = NA, ps.loc[[stusitsc.ind]]$uid),
+  #               selected = NA)
+  # })
+  # output$ts2 <- renderUI({
+  #   stusitsc.ind <- which(stusi == stusitscBy)
+  #   selectInput('ts22', '2. Time Series',
+  #               c("Select TS" = NA, ps.loc[[stusitsc.ind]]$uid),
+  #               selected = NA)
+  # })
+  # output$ts3 <- renderUI({
+  #   stusitsc.ind <- which(stusi == stusitscBy)
+  #   selectInput('ts33', '3. Time Series',
+  #               c("Select TS" = NA, ps.loc[[stusitsc.ind]]$uid),
+  #               selected = NA)
+  # })
+  # output$ts4 <- renderUI({
+  #   stusitsc.ind <- which(stusi == stusitscBy)
+  #   selectInput('ts44', '4. Time Series',
+  #               c("Select TS" = NA, ps.loc[[stusitsc.ind]]$uid),
+  #               selected = NA)
+  # })
+  # output$ts5 <- renderUI({
+  #   stusitsc.ind <- which(stusi == stusitscBy)
+  #   selectInput('ts55', '5. Time Series',
+  #               c("Select TS" = NA, ps.loc[[stusitsc.ind]]$uid),
+  #               selected = NA)
+  # })
+  # 
+  # observe({
+  #   #date input
+  #   in.date.eventsc <- input$datesc
+  #   orig.datesc <- as_date("0000-01-01")
+  #   date.eventsc <- as.numeric(in.date.eventsc - orig.datesc)
+  #   #studysite and ts data
+  #   stusitscBy <<- input$stusitsc
+  #   stusitsc.ind <- which(stusi == stusitscBy)
+  #   tsdata1 <- ps.loc[[stusitsc.ind]][input$ts11, 5:ncol(ps.loc[[stusitsc.ind]])]
+  #   tsdata2 <- ps.loc[[stusitsc.ind]][input$ts22, 5:ncol(ps.loc[[stusitsc.ind]])]
+  #   tsdata3 <- ps.loc[[stusitsc.ind]][input$ts33, 5:ncol(ps.loc[[stusitsc.ind]])]
+  #   tsdata4 <- ps.loc[[stusitsc.ind]][input$ts44, 5:ncol(ps.loc[[stusitsc.ind]])]
+  #   tsdata5 <- ps.loc[[stusitsc.ind]][input$ts55, 5:ncol(ps.loc[[stusitsc.ind]])]
+  #   
+  #   output$tscomp <- renderPlot({
+  #     plot(t(tsdata1) ~ dates.days[[stusitsc.ind]], type = "n",
+  #          ylab = "mm", xlab ="Date",
+  #          xlim = c(min(dates.days[[stusitsc.ind]]),
+  #                   max(dates.days[[stusitsc.ind]])),
+  #          ylim = c(min(ps.loc[[stusitsc.ind]][, 5:ncol(ps.loc[[stusitsc.ind]])]),
+  #                   max(ps.loc[[stusitsc.ind]][, 5:ncol(ps.loc[[stusitsc.ind]])])),
+  #          axes = F)
+  #     
+  #     axis(side = 2)
+  #     plot.info <- par("xaxp")
+  #     tick.pos <- seq(plot.info[1], plot.info[2], length = plot.info[3]+1)
+  #     xlabs <- as_date(tick.pos, origin = "0000-01-01")
+  #     axis(side = 1, labels = xlabs, at = tick.pos)
+  #     grid(col = "grey64")
+  #     
+  #     lines(t(tsdata1) ~ dates.days[[stusitsc.ind]], col = "red")
+  #     points(t(tsdata1) ~ dates.days[[stusitsc.ind]],
+  #            pch = 19, col = "red")
+  #     lines(t(tsdata2) ~ dates.days[[stusitsc.ind]], col = "blue")
+  #     points(t(tsdata2) ~ dates.days[[stusitsc.ind]],
+  #            pch = 19, col = "blue")
+  #     lines(t(tsdata3) ~ dates.days[[stusitsc.ind]], col = "darkgreen")
+  #     points(t(tsdata3) ~ dates.days[[stusitsc.ind]],
+  #            pch = 19, col = "darkgreen")
+  #     lines(t(tsdata4) ~ dates.days[[stusitsc.ind]], col = "black")
+  #     points(t(tsdata4) ~ dates.days[[stusitsc.ind]],
+  #            pch = 19, col = "black")
+  #     lines(t(tsdata5) ~ dates.days[[stusitsc.ind]], col = "cyan")
+  #     points(t(tsdata5) ~ dates.days[[stusitsc.ind]],
+  #            pch = 19, col = "cyan")
+  #     abline(v = date.eventsc, lty = 2,
+  #            col = "red")
+  #     box(which = "plot")
+  #     })
+  # 
+  # })
   
   ## Interactive Map ###########################################
   

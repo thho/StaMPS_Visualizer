@@ -1,4 +1,4 @@
-/* IKONOS Archiver */
+/* StamMPS-Visualizer */
 
 /* font */
 body, label, input, button, select { 
@@ -10,8 +10,8 @@ h1, h2, h3, h4 { font-weight: 400; }
 
 
 /* map */
-/* the classes "querymap" are definde in ui.R */
-#querymap {
+/* the class "map" is definde in ui.R */
+#map {
   height: calc(100vh - 80px) !important;  
 }
 
