@@ -15,10 +15,26 @@ h1, h2, h3, h4 { font-weight: 400; }
   height: calc(100vh - 80px) !important;  
 }
 
-/* search tool panel */
+/* map control panel
+.panel-collapse{
+  max-height: 200px;
+  overflow-y: auto;
+} */
+
 #controls {
   /* appearance */
   background-color: white;
   padding: 20px 20px 20px 20px;
-  cursor: move;
+  /*toggle this for dev reason*/
+  /*height: auto !important;*/
+  max-height: 900px !important;
+  /*toggle this for scrollbar in panel*/
+  overflow-y: auto !important;
+  border-radius: 5px;
+}
+
+/* map control panel container box */
+#cbox {
+  /* appearance */
+  background-color: rgba(0,0,0,0);
 }

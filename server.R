@@ -118,7 +118,7 @@ function(input, output, session) {
           position = "topleft"
         ) %>%
       setView(lng = 0, lat = 0, zoom = 3) %>%
-      addScaleBar(position = "topright",
+      addScaleBar(position = "topleft",
                   options =scaleBarOptions(maxWidth = 100, metric = T, imperial = F))
     })
 
@@ -200,8 +200,8 @@ function(input, output, session) {
     #stusi input
     stusi.ind <- which(stusi == stusiBy)
     #marker input
-    click <<- input$map_marker_click
-    if(is.null(click)){
+    click.map <<- input$map_marker_click
+    if(is.null(click.map)){
       ts <- ps.loc[[stusi.ind]][1, 5:ncol(ps.loc[[stusi.ind]])]
       #create plot
       output$psts <- renderPlot({
@@ -225,10 +225,10 @@ function(input, output, session) {
                col = "red")
         box(which = "plot")
       })}else{
-        if(click$id > nrow(ps.loc[[stusi.ind]])){
-          click$id <- 1}else{click$id <- click$id}
-    text <- paste('You have selected point', click$id, 'from case study', stusiBy, sep = ' ' )
-    ts <- ps.loc[[stusi.ind]][click$id, 5:ncol(ps.loc[[stusi.ind]])]
+        if(click.map$id > nrow(ps.loc[[stusi.ind]])){
+          click.map$id <- 1}else{click.map$id <- click.map$id}
+    text <- paste('You have selected point', click.map$id, 'from case study', stusiBy, sep = ' ' )
+    ts <- ps.loc[[stusi.ind]][click.map$id, 5:ncol(ps.loc[[stusi.ind]])]
     #create plot
     output$psts <- renderPlot({
       plot(t(ts) ~ dates.days[[stusi.ind]], type = "n",
@@ -279,7 +279,7 @@ observeEvent(input$sub.offset, {
   date.event <- as.numeric(in.date.event - orig.date)
   #stusi input
   stusi.ind <- which(stusi == stusiBy)
-    if(is.null(click)){
+    if(is.null(click.map)){
       ts <- ps.loc[[stusi.ind]][1, 5:ncol(ps.loc[[stusi.ind]])]
       ts <- ts - ts[1,1]
       #create plot
@@ -304,10 +304,10 @@ observeEvent(input$sub.offset, {
                col = "red")
         box(which = "plot")
       })}else{
-        if(click$id > nrow(ps.loc[[stusi.ind]])){
-          click$id <- 1}else{click$id <- click$id}
-        text <- paste('You have selected point', click$id, 'from case study', stusiBy, sep = ' ' )
-        ts <- ps.loc[[stusi.ind]][click$id, 5:ncol(ps.loc[[stusi.ind]])]
+        if(click.map$id > nrow(ps.loc[[stusi.ind]])){
+          click.map$id <- 1}else{click.map$id <- click.map$id}
+        text <- paste('You have selected point', click.map$id, 'from case study', stusiBy, sep = ' ' )
+        ts <- ps.loc[[stusi.ind]][click.map$id, 5:ncol(ps.loc[[stusi.ind]])]
         offset <- ts[1,1]
         ts <- ts - offset
         #create plot

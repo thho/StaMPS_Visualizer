@@ -6,6 +6,7 @@
 library(leaflet)
 library(shinydashboard)
 library(shinycssloaders)
+library(shinyBS)
 library(lubridate)
 
 # prepare UI
@@ -33,9 +34,11 @@ shinyUI(fluidPage(
                        "</table>",
                        "<br>")),
                        menuItem("Visualizer", tabName = "vismap", icon = icon("map marked alt")),
-                       menuItem("Explanation", tabName = "expl", icon = icon("comment")),
+                       menuItem("TS Explorer", tabName = "tsexp", icon = icon("chart-line")),
                        menuItem("Baseline Plot", tabName = "blplot", icon = icon("project-diagram")),
-                       menuItem("Manual", tabName = "lit", icon = icon("book-open")),
+                       menuItem("Data Manager", tabName = "datman", icon = icon("folder-open")),
+                       menuItem("Explanation", tabName = "expl", icon = icon("comment")),
+                       menuItem("Manual", tabName = "manual", icon = icon("book-open")),
                        #menuItem("Literature", tabName = "lit", icon = icon("book")),
                        menuItem("Cite", tabName = "cite", icon = icon("graduation-cap"))
                      )# end dashboard Meu
@@ -43,15 +46,20 @@ shinyUI(fluidPage(
     # begin dashboard body
     dashboardBody(
       tabItems(
-        # begin visualizer map
+        # begin visualizer map tab item
         tabItem(tabName = "vismap",
                 # map with PS time series tools
                 leafletOutput("map") %>% withSpinner(color = "#2a84b5"),
-                # begin control panel
-                fixedPanel(id = "controls", class = "panel panel-default",
-                           draggable = T, top = "auto", left = "auto", right = 47, bottom = 20,
-                           width = 900, height = "800",
-                           h2("Time series tools"),
+                # begin container box for toggle controls action button
+                fixedPanel(id = "cbox", class = "panel pael-default",
+                           draggable = F, top = 75, left = "auto",
+                           right = 50, bottom = "auto", width = 110, height = 30,
+                           actionButton('plotBtn', 'Toggle Controls', "data-toggle"='collapse', "data-target"='#controls')),
+                # begin collapsable control panel
+                fixedPanel(id = "controls", class = "collapse",
+                           draggable = T, top = 130, left = "auto", right = 35, bottom = 20,
+                           width = 850, height = 850,
+                           h4("Map tools"),
                            fluidRow(column(3,
                                            selectInput("stusi", "Case Study", stusi,
                                                        selected = stusi[1], width = "200px")),
@@ -66,6 +74,7 @@ shinyUI(fluidPage(
                                                                    '2nd Order Polynomial Trend' = 'ptrend'), 
                                                        selected = 'ctrend'))
                            ),
+                           h4("Time series tools"),
                            fluidRow(column(3,
                                            selectInput('event.marker', label = 'Event Marker',
                                                        event, selected = event[1], width = "200px")),
@@ -73,9 +82,13 @@ shinyUI(fluidPage(
                                            actionButton('sub.offset', label = 'Subtr. Offset'))
                                     ),
                            plotOutput("psts", height = 600, width = 800),
-                           fluidRow(verbatimTextOutput("Click_text")) # enc control panel
-                )
-        )# end visualizer map
+                           fluidRow(verbatimTextOutput("Click_text")) # end control panel inputs/outputs
+                ) # end collapsable control panel
+        ),# end visualizer map tab item
+        # start manual tab item
+        tabItem(tabName = "manual",
+                includeMarkdown("www/manual.md")
+        ) # end manual tab item
       ) # end body items
     ) # end dashboard body 
   ) # end dashboard page
