@@ -253,7 +253,7 @@ observe({
       #create plot
       output$psts <- renderPlot({
         plot(t(psts) ~ dates.days[[stusi.ind]], type = "n",
-             ylab = "mm", xlab ="Date",
+             ylab = "LOS displacement [mm]", xlab ="Date",
              xlim = c(min(dates.days[[stusi.ind]]),
                       max(dates.days[[stusi.ind]])),
              ylim = c(min(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])]),
@@ -311,7 +311,7 @@ observeEvent(input$sub.offset, {
       #create plot
       output$psts <- renderPlot({
         plot(t(psts.off) ~ dates.days[[stusi.ind]], type = "n",
-             ylab = "mm", xlab ="Date",
+             ylab = "cumulative LOS displacement [mm]", xlab ="Date",
              xlim = c(min(dates.days[[stusi.ind]]),
                       max(dates.days[[stusi.ind]])),
              ylim = c(min(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])])-offset,
