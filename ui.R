@@ -80,13 +80,18 @@ shinyUI(fluidPage(
                                                      label = 'Date of event',
                                                      value = Sys.Date())),
                                     column(4,
-                                           actionButton('sub.offset', label = 'Subtr. Offset')),
-                                    column(5,
                                            selectInput('add.trend', 'Add Trendline',
                                                        choices = c('Connect MP' = 'ctrend',
                                                                    'Linear Trend' = 'ltrend',
                                                                    '2nd Order Polynomial Trend' = 'ptrend'), 
-                                                       selected = 'ctrend'))
+                                                       selected = 'ctrend')),
+                                    column(2,
+                                           actionButton('sub.offset', label = 'Subtr. Offset',
+                                                        style = "margin-top: 25px;"))#,
+                                    #column(3,
+                                     #      actionButton('add.ts', label = 'Add point to TS-Selection',
+                                      #                  style = "margin-top: 25px;"))
+                                    
                                     ),
                            plotOutput("psts", height = 600, width = 800),
                            fluidRow(verbatimTextOutput("Click_text")) # end control panel inputs/outputs

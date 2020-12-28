@@ -239,7 +239,7 @@ observe({
       plot(1, 0, type = "n", axes = FALSE,
            ylab = c(""),
            xlab = c(""))
-      text(1, 0, "Click on a point in order to plot deformation time series")
+      text(1, 0, "Select a point on the map to plot a deformation time series")
     })
   }else{if(click.map$group == "Custom Geometry"){
     shinyalert("No measurment point",
