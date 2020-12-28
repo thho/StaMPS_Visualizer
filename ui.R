@@ -70,15 +70,9 @@ shinyUI(fluidPage(
                                     column(3,
                                            sliderInput("pcex", label = "Point Size",
                                                        min = 1, max = 10, value = 5)),
-                                    column(4,# offset = 1,
+                                    column(4,
                                            fileInput("geojson", "Upload Custom Geometry (.geojson)",
-                                              accept = ".geojson")),
-                                    column(1,
-                                           actionButton('plt.geom', label = 'Show Geometry',
-                                                        style = "margin-top: 25px;" ))
-                                    # column(4,
-                                    #        sliderInput("pcex", label = "Point Size",
-                                    #                    min = 0, max = 100, value = 100))
+                                              accept = ".geojson"))
                            ),
                            h4("Time series tools"),
                            fluidRow(column(3,

@@ -10,8 +10,9 @@ function(input, output, session) {
   #make stusiBy accessible outside observeEvent
   #stusiBy <- NULL
 
-  stusitscBy <- NULL
+  #stusitscBy <- NULL
   makeReactiveBinding("stusitscBy")
+  psts <- NULL
   
   # output$ts1 <- renderUI({
   #   stusitsc.ind <- which(stusi == stusitscBy)
@@ -131,6 +132,7 @@ function(input, output, session) {
   observe({
   stusiBy <<- input$stusi
   })
+  
   observe({
     pointsize <<- input$pcex
     stusi.ind <- which(stusi == stusiBy)
@@ -219,233 +221,6 @@ function(input, output, session) {
                      group = "Custom Geometry")
      }
   })
-  # #adding ps data selected for study site
-  # observe({
-  #   #prepare PS stusi data
-  #   stusiBy <<- input$stusi
-  #   stusi.ind <- which(stusi == stusiBy)
-  #   disp <- ps.loc[[stusi.ind]]$disp
-  #   colramp <- rev(matlab.like(10))
-  #   colnum <- colorNumeric(colramp,
-  #                          domain = c(min(ps.loc[[stusi.ind]]$disp),
-  #                                     max(ps.loc[[stusi.ind]]$disp)))
-  #   #prepare marker info data
-  #   eventBy <- input$event.marker
-  #   if(eventBy == "---"){
-  #     #add circle and markers
-  #     leafletProxy("map", data = ps.loc[[stusi.ind]]) %>%
-  #       clearMarkers() %>%
-  #       #add PS circles with color ramp
-  #       addCircleMarkers(ps.loc[[stusi.ind]]$lon,
-  #                        ps.loc[[stusi.ind]]$lat,
-  #                        layerId = ps.loc[[stusi.ind]]$uid,
-  #                        radius=5,
-  #                        fillColor = colramp[as.numeric(cut(disp, breaks = 10))],
-  #                        fillOpacity = 0.8, stroke = F,
-  #                        group = "Measurement Points") %>%
-  #       setView(lng = median(ps.loc[[stusi.ind]]$lon),
-  #               lat = median(ps.loc[[stusi.ind]]$lat),
-  #               zoom = 15)%>%
-  #       setView(lng = median(ps.loc[[stusi.ind]]$lon),
-  #               lat = median(ps.loc[[stusi.ind]]$lat),
-  #               zoom = 15)%>%
-  #       addLegend("bottomleft", pal = colnum,
-  #                 values = ps.loc[[stusi.ind]]$disp,
-  #                 title = "mm/year",
-  #                 layerId = "uid", opacity = 1)
-  #   }else{
-  #     event.ind <- which(event == eventBy) - 1
-  #     #add circle and markers
-  #     leafletProxy("map", data = ps.loc[[stusi.ind]]) %>%
-  #       clearMarkers() %>%
-  #       #add PS circles with color ramp
-  #       addCircleMarkers(ps.loc[[stusi.ind]]$lon,
-  #                        ps.loc[[stusi.ind]]$lat,
-  #                        layerId = ps.loc[[stusi.ind]]$uid,
-  #                        radius=5,
-  #                        fillColor = colramp[as.numeric(cut(disp, breaks = 10))],
-  #                        fillOpacity = 0.8, stroke = F,
-  #                        group = "Measurement Points") %>%
-  #       setView(lng = median(ps.loc[[stusi.ind]]$lon),
-  #               lat = median(ps.loc[[stusi.ind]]$lat),
-  #               zoom = 15)%>%
-  #       #add event info markers with pop-up
-  #       addMarkers(event.loc[[event.ind]]$lon,
-  #                  event.loc[[event.ind]]$lat,
-  #                  layerId = ps.loc[[stusi.ind]]$uid,
-  #                  label = event.info[[event.ind]],
-  #                  icon = event.icon) %>%
-  #       setView(lng = median(ps.loc[[stusi.ind]]$lon),
-  #               lat = median(ps.loc[[stusi.ind]]$lat),
-  #               zoom = 15)%>%
-  #       addLegend("bottomleft", pal = colnum,
-  #                 values = ps.loc[[stusi.ind]]$disp,
-  #                 title = "mm/year",
-  #                 layerId = "uid", opacity = 1)
-  #   }
-  #   
-  # })
-  
-  ##################plot TS for specific MP
-  
-  observe({
-    #date input
-    in.date.event <- input$date
-    orig.date <- as_date("0000-01-01")
-    date.event <- as.numeric(in.date.event - orig.date)
-    #stusi input
-    stusi.ind <- which(stusi == stusiBy)
-    #marker input
-    click.map <<- input$map_marker_click
-    if(is.null(click.map)){
-      ts <- ps.loc[[stusi.ind]][1, 5:ncol(ps.loc[[stusi.ind]])]
-      #create plot
-      output$psts <- renderPlot({
-        plot(t(ts) ~ dates.days[[stusi.ind]], type = "n",
-             ylab = "mm", xlab ="Date",
-             xlim = c(min(dates.days[[stusi.ind]]),
-                      max(dates.days[[stusi.ind]])),
-             ylim = c(min(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])]),
-                      max(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])])),
-             axes = F)
-        axis(side = 2)
-        plot.info <- par("xaxp")
-        tick.pos <- seq(plot.info[1], plot.info[2], length = plot.info[3]+1)
-        xlabs <- as_date(tick.pos, origin = "0000-01-01")
-        axis(side = 1, labels = xlabs, at = tick.pos)
-        grid(col = "grey64")
-        lines(t(ts) ~ dates.days[[stusi.ind]])
-        points(t(ts) ~ dates.days[[stusi.ind]],
-               pch = 19)
-        abline(v = date.event, lty = 2,
-               col = "red")
-        box(which = "plot")
-      })}else{
-        if(click.map$id > nrow(ps.loc[[stusi.ind]])){
-          click.map$id <- 1}else{click.map$id <- click.map$id}
-    text <- paste('You have selected point', click.map$id, 'from case study', stusiBy, sep = ' ' )
-    ts <- ps.loc[[stusi.ind]][click.map$id, 5:ncol(ps.loc[[stusi.ind]])]
-    #create plot
-    output$psts <- renderPlot({
-      plot(t(ts) ~ dates.days[[stusi.ind]], type = "n",
-           ylab = "mm", xlab ="Date",
-           xlim = c(min(dates.days[[stusi.ind]]),
-                    max(dates.days[[stusi.ind]])),
-           ylim = c(min(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])]),
-                    max(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])])),
-           axes = F)
-      axis(side = 2)
-      plot.info <- par("xaxp")
-      tick.pos <- seq(plot.info[1], plot.info[2], length = plot.info[3]+1)
-      xlabs <- as_date(tick.pos, origin = "0000-01-01")
-      axis(side = 1, labels = xlabs, at = tick.pos)
-      grid(col = "grey64")
-      if(input$add.trend == 'ctrend'){
-        lines(t(ts) ~ dates.days[[stusi.ind]])}else{
-          if(input$add.trend == 'ltrend'){
-            lmfit <- lm(t(ts) ~ dates.days[[stusi.ind]])
-            abline(lmfit, col = 'black')}else{
-              if(input$add.trend == 'ptrend'){
-                date.d <- dates.days[[stusi.ind]]
-                pfit <- lm(t(ts) ~ poly(date.d, 2, raw = TRUE))
-                xx <- seq(range(date.d)[1],
-                          range(date.d)[2],
-                          length.out = 250)
-                lines(xx, predict(pfit, data.frame(date.d = xx)), col = 'black')
-              }else{return()}
-            }
-        }
-      points(t(ts) ~ dates.days[[stusi.ind]],
-             pch = 19)
-      abline(v = date.event, lty = 2,
-             col = "red")
-      box(which = "plot")
-    })
-    #redner output text
-    output$Click_text <- renderText({text})}
-  })
-#}
-
-##################plot subtracted offset TS for specific MP
-
-observeEvent(input$sub.offset, {
-  #date input
-  in.date.event <- input$date
-  orig.date <- as_date("0000-01-01")
-  date.event <- as.numeric(in.date.event - orig.date)
-  #stusi input
-  stusi.ind <- which(stusi == stusiBy)
-    if(is.null(click.map)){
-      ts <- ps.loc[[stusi.ind]][1, 5:ncol(ps.loc[[stusi.ind]])]
-      ts <- ts - ts[1,1]
-      #create plot
-      output$psts <- renderPlot({
-        plot(t(ts) ~ dates.days[[stusi.ind]], type = "n",
-             ylab = "mm", xlab ="Date",
-             xlim = c(min(dates.days[[stusi.ind]]),
-                      max(dates.days[[stusi.ind]])),
-             ylim = c(min(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])]),
-                      max(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])])),
-             axes = F)
-        axis(side = 2)
-        plot.info <- par("xaxp")
-        tick.pos <- seq(plot.info[1], plot.info[2], length = plot.info[3]+1)
-        xlabs <- as_date(tick.pos, origin = "0000-01-01")
-        axis(side = 1, labels = xlabs, at = tick.pos)
-        grid(col = "grey64")
-        lines(t(ts) ~ dates.days[[stusi.ind]])
-        points(t(ts) ~ dates.days[[stusi.ind]],
-               pch = 19)
-        abline(v = date.event, lty = 2,
-               col = "red")
-        box(which = "plot")
-      })}else{
-        if(click.map$id > nrow(ps.loc[[stusi.ind]])){
-          click.map$id <- 1}else{click.map$id <- click.map$id}
-        text <- paste('You have selected point', click.map$id, 'from case study', stusiBy, sep = ' ' )
-        ts <- ps.loc[[stusi.ind]][click.map$id, 5:ncol(ps.loc[[stusi.ind]])]
-        offset <- ts[1,1]
-        ts <- ts - offset
-        #create plot
-        output$psts <- renderPlot({
-          plot(t(ts) ~ dates.days[[stusi.ind]], type = "n",
-               ylab = "mm", xlab ="Date",
-               xlim = c(min(dates.days[[stusi.ind]]),
-                        max(dates.days[[stusi.ind]])),
-               ylim = c(min(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])])-offset,
-                        max(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])])-offset),
-               axes = F)
-          axis(side = 2)
-          plot.info <- par("xaxp")
-          tick.pos <- seq(plot.info[1], plot.info[2], length = plot.info[3]+1)
-          xlabs <- as_date(tick.pos, origin = "0000-01-01")
-          axis(side = 1, labels = xlabs, at = tick.pos)
-          grid(col = "grey64")
-          if(input$add.trend == 'ctrend'){
-            lines(t(ts) ~ dates.days[[stusi.ind]])}else{
-              if(input$add.trend == 'ltrend'){
-                lmfit <- lm(t(ts) ~ dates.days[[stusi.ind]])
-                abline(lmfit, col = 'black')}else{
-                  if(input$add.trend == 'ptrend'){
-                    date.d <- dates.days[[stusi.ind]]
-                    pfit <- lm(t(ts) ~ poly(date.d, 2, raw = TRUE))
-                    xx <- seq(range(date.d)[1],
-                              range(date.d)[2],
-                              length.out = 250)
-                    lines(xx, predict(pfit, data.frame(date.d = xx)), col = 'black')
-                  }else{return()}
-                }
-            }
-          points(t(ts) ~ dates.days[[stusi.ind]],
-                 pch = 19)
-          abline(v = date.event, lty = 2,
-                 col = "red")
-          box(which = "plot")
-        })}
-      })
-
-
-##################################################
 
 ##################plot TS for specific MP
 
@@ -459,36 +234,25 @@ observe({
   #marker input
   click.map <<- input$map_marker_click
   if(is.null(click.map)){
-    ts <- ps.loc[[stusi.ind]][1, 5:ncol(ps.loc[[stusi.ind]])]
     #create plot
     output$psts <- renderPlot({
-      plot(t(ts) ~ dates.days[[stusi.ind]], type = "n",
-           ylab = "mm", xlab ="Date",
-           xlim = c(min(dates.days[[stusi.ind]]),
-                    max(dates.days[[stusi.ind]])),
-           ylim = c(min(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])]),
-                    max(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])])),
-           axes = F)
-      axis(side = 2)
-      plot.info <- par("xaxp")
-      tick.pos <- seq(plot.info[1], plot.info[2], length = plot.info[3]+1)
-      xlabs <- as_date(tick.pos, origin = "0000-01-01")
-      axis(side = 1, labels = xlabs, at = tick.pos)
-      grid(col = "grey64")
-      lines(t(ts) ~ dates.days[[stusi.ind]])
-      points(t(ts) ~ dates.days[[stusi.ind]],
-             pch = 19)
-      abline(v = date.event, lty = 2,
-             col = "red")
-      box(which = "plot")
-    })}else{
+      plot(1, 0, type = "n", axes = FALSE,
+           ylab = c(""),
+           xlab = c(""))
+      text(1, 0, "Click on a point in order to plot deformation time series")
+    })
+  }else{if(click.map$group == "Custom Geometry"){
+    shinyalert("No measurment point",
+               "You have selected a custom geometry marker, click on a StaMPS measurement point in order to plot deformation time series",
+               type = "error")}else{
       if(click.map$id > nrow(ps.loc[[stusi.ind]])){
         click.map$id <- 1}else{click.map$id <- click.map$id}
+      last.click.id <<- click.map$id
       text <- paste('You have selected point', click.map$id, 'from case study', stusiBy, sep = ' ' )
-      ts <- ps.loc[[stusi.ind]][click.map$id, 5:ncol(ps.loc[[stusi.ind]])]
+      psts <<- ps.loc[[stusi.ind]][click.map$id, 5:ncol(ps.loc[[stusi.ind]])]
       #create plot
       output$psts <- renderPlot({
-        plot(t(ts) ~ dates.days[[stusi.ind]], type = "n",
+        plot(t(psts) ~ dates.days[[stusi.ind]], type = "n",
              ylab = "mm", xlab ="Date",
              xlim = c(min(dates.days[[stusi.ind]]),
                       max(dates.days[[stusi.ind]])),
@@ -502,13 +266,13 @@ observe({
         axis(side = 1, labels = xlabs, at = tick.pos)
         grid(col = "grey64")
         if(input$add.trend == 'ctrend'){
-          lines(t(ts) ~ dates.days[[stusi.ind]])}else{
+          lines(t(psts) ~ dates.days[[stusi.ind]])}else{
             if(input$add.trend == 'ltrend'){
-              lmfit <- lm(t(ts) ~ dates.days[[stusi.ind]])
+              lmfit <- lm(t(psts) ~ dates.days[[stusi.ind]])
               abline(lmfit, col = 'black')}else{
                 if(input$add.trend == 'ptrend'){
                   date.d <- dates.days[[stusi.ind]]
-                  pfit <- lm(t(ts) ~ poly(date.d, 2, raw = TRUE))
+                  pfit <- lm(t(psts) ~ poly(date.d, 2, raw = TRUE))
                   xx <- seq(range(date.d)[1],
                             range(date.d)[2],
                             length.out = 250)
@@ -516,99 +280,71 @@ observe({
                 }else{return()}
               }
           }
-        points(t(ts) ~ dates.days[[stusi.ind]],
+        points(t(psts) ~ dates.days[[stusi.ind]],
                pch = 19)
         abline(v = date.event, lty = 2,
                col = "red")
         box(which = "plot")
       })
-      #redner output text
-      output$Click_text <- renderText({text})}
+      #render output text
+      output$Click_text <- renderText({text})
+    }
+  }
 })
-#}
+
 
 ##################plot subtracted offset TS for specific MP
 
-# observeEvent(input$sub.offset, {
-#   #date input
-#   in.date.event <- input$date
-#   orig.date <- as_date("0000-01-01")
-#   date.event <- as.numeric(in.date.event - orig.date)
-#   #stusi input
-#   stusi.ind <- which(stusi == stusiBy)
-#   if(is.null(click.map)){
-#     ts <- ps.loc[[stusi.ind]][1, 5:ncol(ps.loc[[stusi.ind]])]
-#     ts <- ts - ts[1,1]
-#     #create plot
-#     output$psts <- renderPlot({
-#       plot(t(ts) ~ dates.days[[stusi.ind]], type = "n",
-#            ylab = "mm", xlab ="Date",
-#            xlim = c(min(dates.days[[stusi.ind]]),
-#                     max(dates.days[[stusi.ind]])),
-#            ylim = c(min(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])]),
-#                     max(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])])),
-#            axes = F)
-#       axis(side = 2)
-#       plot.info <- par("xaxp")
-#       tick.pos <- seq(plot.info[1], plot.info[2], length = plot.info[3]+1)
-#       xlabs <- as_date(tick.pos, origin = "0000-01-01")
-#       axis(side = 1, labels = xlabs, at = tick.pos)
-#       grid(col = "grey64")
-#       lines(t(ts) ~ dates.days[[stusi.ind]])
-#       points(t(ts) ~ dates.days[[stusi.ind]],
-#              pch = 19)
-#       abline(v = date.event, lty = 2,
-#              col = "red")
-#       box(which = "plot")
-#     })}else{
-#       if(click.map$id > nrow(ps.loc[[stusi.ind]])){
-#         click.map$id <- 1}else{click.map$id <- click.map$id}
-#       text <- paste('You have selected point', click.map$id, 'from case study', stusiBy, sep = ' ' )
-#       ts <- ps.loc[[stusi.ind]][click.map$id, 5:ncol(ps.loc[[stusi.ind]])]
-#       offset <- ts[1,1]
-#       ts <- ts - offset
-#       #create plot
-#       output$psts <- renderPlot({
-#         plot(t(ts) ~ dates.days[[stusi.ind]], type = "n",
-#              ylab = "mm", xlab ="Date",
-#              xlim = c(min(dates.days[[stusi.ind]]),
-#                       max(dates.days[[stusi.ind]])),
-#              ylim = c(min(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])])-offset,
-#                       max(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])])-offset),
-#              axes = F)
-#         axis(side = 2)
-#         plot.info <- par("xaxp")
-#         tick.pos <- seq(plot.info[1], plot.info[2], length = plot.info[3]+1)
-#         xlabs <- as_date(tick.pos, origin = "0000-01-01")
-#         axis(side = 1, labels = xlabs, at = tick.pos)
-#         grid(col = "grey64")
-#         if(input$add.trend == 'ctrend'){
-#           lines(t(ts) ~ dates.days[[stusi.ind]])}else{
-#             if(input$add.trend == 'ltrend'){
-#               lmfit <- lm(t(ts) ~ dates.days[[stusi.ind]])
-#               abline(lmfit, col = 'black')}else{
-#                 if(input$add.trend == 'ptrend'){
-#                   date.d <- dates.days[[stusi.ind]]
-#                   pfit <- lm(t(ts) ~ poly(date.d, 2, raw = TRUE))
-#                   xx <- seq(range(date.d)[1],
-#                             range(date.d)[2],
-#                             length.out = 250)
-#                   lines(xx, predict(pfit, data.frame(date.d = xx)), col = 'black')
-#                 }else{return()}
-#               }
-#           }
-#         points(t(ts) ~ dates.days[[stusi.ind]],
-#                pch = 19)
-#         abline(v = date.event, lty = 2,
-#                col = "red")
-#         box(which = "plot")
-#       })}
-# })
+observeEvent(input$sub.offset, {
+  #date input
+  in.date.event <- input$date
+  orig.date <- as_date("0000-01-01")
+  date.event <- as.numeric(in.date.event - orig.date)
+  #stusi input
+  stusi.ind <- which(stusi == stusiBy)
+  if(is.null(click.map) | is.null(psts)){
+    shinyalert("No TS selected",
+               "You have not selected a deformation time series, click on a StaMPS measurement point in order to plot deformation time series",
+               type = "error")}else{
+      offset <- psts[1,1]
+      psts.off <- psts - offset
+      #create plot
+      output$psts <- renderPlot({
+        plot(t(psts.off) ~ dates.days[[stusi.ind]], type = "n",
+             ylab = "mm", xlab ="Date",
+             xlim = c(min(dates.days[[stusi.ind]]),
+                      max(dates.days[[stusi.ind]])),
+             ylim = c(min(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])])-offset,
+                      max(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])])-offset),
+             axes = F)
+        axis(side = 2)
+        plot.info <- par("xaxp")
+        tick.pos <- seq(plot.info[1], plot.info[2], length = plot.info[3]+1)
+        xlabs <- as_date(tick.pos, origin = "0000-01-01")
+        axis(side = 1, labels = xlabs, at = tick.pos)
+        grid(col = "grey64")
+        if(input$add.trend == 'ctrend'){
+          lines(t(psts.off) ~ dates.days[[stusi.ind]])}else{
+            if(input$add.trend == 'ltrend'){
+              lmfit <- lm(t(psts.off) ~ dates.days[[stusi.ind]])
+              abline(lmfit, col = 'black')}else{
+                if(input$add.trend == 'ptrend'){
+                  date.d <- dates.days[[stusi.ind]]
+                  pfit <- lm(t(psts.off) ~ poly(date.d, 2, raw = TRUE))
+                  xx <- seq(range(date.d)[1],
+                            range(date.d)[2],
+                            length.out = 250)
+                  lines(xx, predict(pfit, data.frame(date.d = xx)), col = 'black')
+                }else{return()}
+              }
+          }
+        points(t(psts.off) ~ dates.days[[stusi.ind]],
+               pch = 19)
+        abline(v = date.event, lty = 2,
+               col = "red")
+        box(which = "plot")
+      })}
+})
 
-###################################################
-
-
-
-
-
+# end of server function
 }
