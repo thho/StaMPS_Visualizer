@@ -1,6 +1,9 @@
+library(shinyalert)
 library(leaflet)
 library(colorRamps)
 library(lubridate)
+library(rgeos)
+library(rgdal)
 
 function(input, output, session) {
   
@@ -99,7 +102,8 @@ function(input, output, session) {
   
   #in order to add WMS tiels, see the comments below
     output$map <- renderLeaflet({
-    leaflet() %>%
+    leaflet(options = leafletOptions(preferCanvas = TRUE,
+                                     zoomControl = FALSE)) %>%
         addTiles(group = "OSM Map") %>%
         addProviderTiles('Esri.WorldImagery',
                          group = "ESRI World Satellite") %>%
@@ -112,18 +116,46 @@ function(input, output, session) {
         #   options = WMSTileOptions(format = "image/png", transparent = F),
         #   attribution = "a propper attribution to the service") %>%
         addLayersControl(
-        baseGroups = c("ESRI World Satellite", "OSM Map"), #add the "WMS Tiles" string defined above with group = to the list 
-          overlayGroups = c("Measurement Points"),
+          baseGroups = c("ESRI World Satellite", "OSM Map"), #add the "WMS Tiles" string defined above with group = to the list 
+          overlayGroups = c("Measurement Points", "Custom Geometry"),
           options = layersControlOptions(collapsed = T),
-          position = "topleft"
-        ) %>%
+          position = "topleft") %>%
       setView(lng = 0, lat = 0, zoom = 3) %>%
       addScaleBar(position = "topleft",
                   options =scaleBarOptions(maxWidth = 100, metric = T, imperial = F))
     })
 
-
-  #adding ps data selected for study site
+#####################adding PS to interactive map#####################
+  # adding ps data selected for study site
+  # make stusi initial excessible 
+  observe({
+  stusiBy <<- input$stusi
+  })
+  observe({
+    pointsize <<- input$pcex
+    stusi.ind <- which(stusi == stusiBy)
+    disp <- ps.loc[[stusi.ind]]$disp
+    colramp <- rev(matlab.like(10))
+    colnum <- colorNumeric(colramp,
+                           domain = c(min(ps.loc[[stusi.ind]]$disp),
+                                      max(ps.loc[[stusi.ind]]$disp)))
+    #show PS on map
+    leafletProxy("map", data = ps.loc[[stusi.ind]]) %>%
+      clearGroup("Measurement Points") %>%
+      #add PS circles with color ramp
+      addCircleMarkers(ps.loc[[stusi.ind]]$lon,
+                       ps.loc[[stusi.ind]]$lat,
+                       layerId = ps.loc[[stusi.ind]]$uid,
+                       radius=pointsize,
+                       fillColor = colramp[as.numeric(cut(disp, breaks = 10))],
+                       fillOpacity = 0.8, stroke = F,
+                       group = "Measurement Points") %>%
+      addLegend("bottomleft", pal = colnum,
+                values = ps.loc[[stusi.ind]]$disp,
+                title = "mm/year",
+                layerId = "uid", opacity = 1)
+  })
+  
   observe({
     #prepare PS stusi data
     stusiBy <<- input$stusi
@@ -133,62 +165,126 @@ function(input, output, session) {
     colnum <- colorNumeric(colramp,
                            domain = c(min(ps.loc[[stusi.ind]]$disp),
                                       max(ps.loc[[stusi.ind]]$disp)))
-    #prepare marker info data
-    eventBy <- input$event.marker
-    if(eventBy == "---"){
-      #add circle and markers
-      leafletProxy("map", data = ps.loc[[stusi.ind]]) %>%
-        clearMarkers() %>%
-        #add PS circles with color ramp
-        addCircleMarkers(ps.loc[[stusi.ind]]$lon,
-                         ps.loc[[stusi.ind]]$lat,
-                         layerId = ps.loc[[stusi.ind]]$uid,
-                         radius=5,
-                         fillColor = colramp[as.numeric(cut(disp, breaks = 10))],
-                         fillOpacity = 0.8, stroke = F,
-                         group = "Measurement Points") %>%
-        setView(lng = median(ps.loc[[stusi.ind]]$lon),
-                lat = median(ps.loc[[stusi.ind]]$lat),
-                zoom = 15)%>%
-        setView(lng = median(ps.loc[[stusi.ind]]$lon),
-                lat = median(ps.loc[[stusi.ind]]$lat),
-                zoom = 15)%>%
-        addLegend("bottomleft", pal = colnum,
-                  values = ps.loc[[stusi.ind]]$disp,
-                  title = "mm/year",
-                  layerId = "uid", opacity = 1)
-    }else{
-      event.ind <- which(event == eventBy) - 1
-      #add circle and markers
-      leafletProxy("map", data = ps.loc[[stusi.ind]]) %>%
-        clearMarkers() %>%
-        #add PS circles with color ramp
-        addCircleMarkers(ps.loc[[stusi.ind]]$lon,
-                         ps.loc[[stusi.ind]]$lat,
-                         layerId = ps.loc[[stusi.ind]]$uid,
-                         radius=5,
-                         fillColor = colramp[as.numeric(cut(disp, breaks = 10))],
-                         fillOpacity = 0.8, stroke = F,
-                         group = "Measurement Points") %>%
-        setView(lng = median(ps.loc[[stusi.ind]]$lon),
-                lat = median(ps.loc[[stusi.ind]]$lat),
-                zoom = 15)%>%
-        #add event info markers with pop-up
-        addMarkers(event.loc[[event.ind]]$lon,
-                   event.loc[[event.ind]]$lat,
-                   layerId = ps.loc[[stusi.ind]]$uid,
-                   label = event.info[[event.ind]],
-                   icon = event.icon) %>%
-        setView(lng = median(ps.loc[[stusi.ind]]$lon),
-                lat = median(ps.loc[[stusi.ind]]$lat),
-                zoom = 15)%>%
-        addLegend("bottomleft", pal = colnum,
-                  values = ps.loc[[stusi.ind]]$disp,
-                  title = "mm/year",
-                  layerId = "uid", opacity = 1)
-    }
-    
+    #show PS on map
+    leafletProxy("map", data = ps.loc[[stusi.ind]]) %>%
+      clearGroup("Measurement Points") %>%
+      #add PS circles with color ramp
+      addCircleMarkers(ps.loc[[stusi.ind]]$lon,
+                       ps.loc[[stusi.ind]]$lat,
+                       layerId = ps.loc[[stusi.ind]]$uid,
+                       radius=pointsize,
+                       fillColor = colramp[as.numeric(cut(disp, breaks = 10))],
+                       fillOpacity = 0.8, stroke = F,
+                       group = "Measurement Points") %>%
+      setView(lng = median(ps.loc[[stusi.ind]]$lon),
+              lat = median(ps.loc[[stusi.ind]]$lat),
+              zoom = 15)%>%
+      setView(lng = median(ps.loc[[stusi.ind]]$lon),
+              lat = median(ps.loc[[stusi.ind]]$lat),
+              zoom = 15)%>%
+      addLegend("bottomleft", pal = colnum,
+                values = ps.loc[[stusi.ind]]$disp,
+                title = "mm/year",
+                layerId = "uid", opacity = 1)
   })
+  
+  observe({
+     #upload and show custom geometry
+     infile <- input$geojson
+     ext <- tools::file_ext(infile$datapath)
+     req(infile)
+     if(ext != "geojson"){shinyalert("Wrong file format", "Please upload a .geojson file", type = "error")}
+     shiny::validate(need(ext %in% c("geojson"), "Please upload a .geojson file"))
+     # load infile to object
+     geoms <- readOGR(infile$datapath)
+     # look up spatial class type and render geometry
+     if(class(geoms)[1] == "SpatialPointsDataFrame"){
+        leafletProxy("map") %>%
+         clearGroup("Custom Geometry") %>%
+         addMarkers(data = geoms,
+                    group = "Custom Geometry",
+                     )
+     }
+     if(class(geoms)[1] == "SpatialLinesDataFrame"){
+        leafletProxy("map") %>%
+         clearGroup("Custom Geometry") %>%
+         addPolylines(data = geoms, color = "red",
+                      group = "Custom Geometry")
+     }
+     if(class(geoms)[1] == "SpatialPolygonsDataFrame"){
+         leafletProxy("map") %>%
+         clearGroup("Custom Geometry") %>%
+         addPolygons(data = geoms, color = "red",
+                     fill = FALSE, weight = 4,
+                     group = "Custom Geometry")
+     }
+  })
+  # #adding ps data selected for study site
+  # observe({
+  #   #prepare PS stusi data
+  #   stusiBy <<- input$stusi
+  #   stusi.ind <- which(stusi == stusiBy)
+  #   disp <- ps.loc[[stusi.ind]]$disp
+  #   colramp <- rev(matlab.like(10))
+  #   colnum <- colorNumeric(colramp,
+  #                          domain = c(min(ps.loc[[stusi.ind]]$disp),
+  #                                     max(ps.loc[[stusi.ind]]$disp)))
+  #   #prepare marker info data
+  #   eventBy <- input$event.marker
+  #   if(eventBy == "---"){
+  #     #add circle and markers
+  #     leafletProxy("map", data = ps.loc[[stusi.ind]]) %>%
+  #       clearMarkers() %>%
+  #       #add PS circles with color ramp
+  #       addCircleMarkers(ps.loc[[stusi.ind]]$lon,
+  #                        ps.loc[[stusi.ind]]$lat,
+  #                        layerId = ps.loc[[stusi.ind]]$uid,
+  #                        radius=5,
+  #                        fillColor = colramp[as.numeric(cut(disp, breaks = 10))],
+  #                        fillOpacity = 0.8, stroke = F,
+  #                        group = "Measurement Points") %>%
+  #       setView(lng = median(ps.loc[[stusi.ind]]$lon),
+  #               lat = median(ps.loc[[stusi.ind]]$lat),
+  #               zoom = 15)%>%
+  #       setView(lng = median(ps.loc[[stusi.ind]]$lon),
+  #               lat = median(ps.loc[[stusi.ind]]$lat),
+  #               zoom = 15)%>%
+  #       addLegend("bottomleft", pal = colnum,
+  #                 values = ps.loc[[stusi.ind]]$disp,
+  #                 title = "mm/year",
+  #                 layerId = "uid", opacity = 1)
+  #   }else{
+  #     event.ind <- which(event == eventBy) - 1
+  #     #add circle and markers
+  #     leafletProxy("map", data = ps.loc[[stusi.ind]]) %>%
+  #       clearMarkers() %>%
+  #       #add PS circles with color ramp
+  #       addCircleMarkers(ps.loc[[stusi.ind]]$lon,
+  #                        ps.loc[[stusi.ind]]$lat,
+  #                        layerId = ps.loc[[stusi.ind]]$uid,
+  #                        radius=5,
+  #                        fillColor = colramp[as.numeric(cut(disp, breaks = 10))],
+  #                        fillOpacity = 0.8, stroke = F,
+  #                        group = "Measurement Points") %>%
+  #       setView(lng = median(ps.loc[[stusi.ind]]$lon),
+  #               lat = median(ps.loc[[stusi.ind]]$lat),
+  #               zoom = 15)%>%
+  #       #add event info markers with pop-up
+  #       addMarkers(event.loc[[event.ind]]$lon,
+  #                  event.loc[[event.ind]]$lat,
+  #                  layerId = ps.loc[[stusi.ind]]$uid,
+  #                  label = event.info[[event.ind]],
+  #                  icon = event.icon) %>%
+  #       setView(lng = median(ps.loc[[stusi.ind]]$lon),
+  #               lat = median(ps.loc[[stusi.ind]]$lat),
+  #               zoom = 15)%>%
+  #       addLegend("bottomleft", pal = colnum,
+  #                 values = ps.loc[[stusi.ind]]$disp,
+  #                 title = "mm/year",
+  #                 layerId = "uid", opacity = 1)
+  #   }
+  #   
+  # })
   
   ##################plot TS for specific MP
   
@@ -347,4 +443,172 @@ observeEvent(input$sub.offset, {
           box(which = "plot")
         })}
       })
+
+
+##################################################
+
+##################plot TS for specific MP
+
+observe({
+  #date input
+  in.date.event <- input$date
+  orig.date <- as_date("0000-01-01")
+  date.event <- as.numeric(in.date.event - orig.date)
+  #stusi input
+  stusi.ind <- which(stusi == stusiBy)
+  #marker input
+  click.map <<- input$map_marker_click
+  if(is.null(click.map)){
+    ts <- ps.loc[[stusi.ind]][1, 5:ncol(ps.loc[[stusi.ind]])]
+    #create plot
+    output$psts <- renderPlot({
+      plot(t(ts) ~ dates.days[[stusi.ind]], type = "n",
+           ylab = "mm", xlab ="Date",
+           xlim = c(min(dates.days[[stusi.ind]]),
+                    max(dates.days[[stusi.ind]])),
+           ylim = c(min(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])]),
+                    max(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])])),
+           axes = F)
+      axis(side = 2)
+      plot.info <- par("xaxp")
+      tick.pos <- seq(plot.info[1], plot.info[2], length = plot.info[3]+1)
+      xlabs <- as_date(tick.pos, origin = "0000-01-01")
+      axis(side = 1, labels = xlabs, at = tick.pos)
+      grid(col = "grey64")
+      lines(t(ts) ~ dates.days[[stusi.ind]])
+      points(t(ts) ~ dates.days[[stusi.ind]],
+             pch = 19)
+      abline(v = date.event, lty = 2,
+             col = "red")
+      box(which = "plot")
+    })}else{
+      if(click.map$id > nrow(ps.loc[[stusi.ind]])){
+        click.map$id <- 1}else{click.map$id <- click.map$id}
+      text <- paste('You have selected point', click.map$id, 'from case study', stusiBy, sep = ' ' )
+      ts <- ps.loc[[stusi.ind]][click.map$id, 5:ncol(ps.loc[[stusi.ind]])]
+      #create plot
+      output$psts <- renderPlot({
+        plot(t(ts) ~ dates.days[[stusi.ind]], type = "n",
+             ylab = "mm", xlab ="Date",
+             xlim = c(min(dates.days[[stusi.ind]]),
+                      max(dates.days[[stusi.ind]])),
+             ylim = c(min(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])]),
+                      max(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])])),
+             axes = F)
+        axis(side = 2)
+        plot.info <- par("xaxp")
+        tick.pos <- seq(plot.info[1], plot.info[2], length = plot.info[3]+1)
+        xlabs <- as_date(tick.pos, origin = "0000-01-01")
+        axis(side = 1, labels = xlabs, at = tick.pos)
+        grid(col = "grey64")
+        if(input$add.trend == 'ctrend'){
+          lines(t(ts) ~ dates.days[[stusi.ind]])}else{
+            if(input$add.trend == 'ltrend'){
+              lmfit <- lm(t(ts) ~ dates.days[[stusi.ind]])
+              abline(lmfit, col = 'black')}else{
+                if(input$add.trend == 'ptrend'){
+                  date.d <- dates.days[[stusi.ind]]
+                  pfit <- lm(t(ts) ~ poly(date.d, 2, raw = TRUE))
+                  xx <- seq(range(date.d)[1],
+                            range(date.d)[2],
+                            length.out = 250)
+                  lines(xx, predict(pfit, data.frame(date.d = xx)), col = 'black')
+                }else{return()}
+              }
+          }
+        points(t(ts) ~ dates.days[[stusi.ind]],
+               pch = 19)
+        abline(v = date.event, lty = 2,
+               col = "red")
+        box(which = "plot")
+      })
+      #redner output text
+      output$Click_text <- renderText({text})}
+})
+#}
+
+##################plot subtracted offset TS for specific MP
+
+# observeEvent(input$sub.offset, {
+#   #date input
+#   in.date.event <- input$date
+#   orig.date <- as_date("0000-01-01")
+#   date.event <- as.numeric(in.date.event - orig.date)
+#   #stusi input
+#   stusi.ind <- which(stusi == stusiBy)
+#   if(is.null(click.map)){
+#     ts <- ps.loc[[stusi.ind]][1, 5:ncol(ps.loc[[stusi.ind]])]
+#     ts <- ts - ts[1,1]
+#     #create plot
+#     output$psts <- renderPlot({
+#       plot(t(ts) ~ dates.days[[stusi.ind]], type = "n",
+#            ylab = "mm", xlab ="Date",
+#            xlim = c(min(dates.days[[stusi.ind]]),
+#                     max(dates.days[[stusi.ind]])),
+#            ylim = c(min(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])]),
+#                     max(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])])),
+#            axes = F)
+#       axis(side = 2)
+#       plot.info <- par("xaxp")
+#       tick.pos <- seq(plot.info[1], plot.info[2], length = plot.info[3]+1)
+#       xlabs <- as_date(tick.pos, origin = "0000-01-01")
+#       axis(side = 1, labels = xlabs, at = tick.pos)
+#       grid(col = "grey64")
+#       lines(t(ts) ~ dates.days[[stusi.ind]])
+#       points(t(ts) ~ dates.days[[stusi.ind]],
+#              pch = 19)
+#       abline(v = date.event, lty = 2,
+#              col = "red")
+#       box(which = "plot")
+#     })}else{
+#       if(click.map$id > nrow(ps.loc[[stusi.ind]])){
+#         click.map$id <- 1}else{click.map$id <- click.map$id}
+#       text <- paste('You have selected point', click.map$id, 'from case study', stusiBy, sep = ' ' )
+#       ts <- ps.loc[[stusi.ind]][click.map$id, 5:ncol(ps.loc[[stusi.ind]])]
+#       offset <- ts[1,1]
+#       ts <- ts - offset
+#       #create plot
+#       output$psts <- renderPlot({
+#         plot(t(ts) ~ dates.days[[stusi.ind]], type = "n",
+#              ylab = "mm", xlab ="Date",
+#              xlim = c(min(dates.days[[stusi.ind]]),
+#                       max(dates.days[[stusi.ind]])),
+#              ylim = c(min(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])])-offset,
+#                       max(ps.loc[[stusi.ind]][, 5:ncol(ps.loc[[stusi.ind]])])-offset),
+#              axes = F)
+#         axis(side = 2)
+#         plot.info <- par("xaxp")
+#         tick.pos <- seq(plot.info[1], plot.info[2], length = plot.info[3]+1)
+#         xlabs <- as_date(tick.pos, origin = "0000-01-01")
+#         axis(side = 1, labels = xlabs, at = tick.pos)
+#         grid(col = "grey64")
+#         if(input$add.trend == 'ctrend'){
+#           lines(t(ts) ~ dates.days[[stusi.ind]])}else{
+#             if(input$add.trend == 'ltrend'){
+#               lmfit <- lm(t(ts) ~ dates.days[[stusi.ind]])
+#               abline(lmfit, col = 'black')}else{
+#                 if(input$add.trend == 'ptrend'){
+#                   date.d <- dates.days[[stusi.ind]]
+#                   pfit <- lm(t(ts) ~ poly(date.d, 2, raw = TRUE))
+#                   xx <- seq(range(date.d)[1],
+#                             range(date.d)[2],
+#                             length.out = 250)
+#                   lines(xx, predict(pfit, data.frame(date.d = xx)), col = 'black')
+#                 }else{return()}
+#               }
+#           }
+#         points(t(ts) ~ dates.days[[stusi.ind]],
+#                pch = 19)
+#         abline(v = date.event, lty = 2,
+#                col = "red")
+#         box(which = "plot")
+#       })}
+# })
+
+###################################################
+
+
+
+
+
 }

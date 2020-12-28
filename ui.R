@@ -7,6 +7,7 @@ library(leaflet)
 library(shinydashboard)
 library(shinycssloaders)
 library(shinyBS)
+library(shinyalert)
 library(lubridate)
 
 # prepare UI
@@ -14,6 +15,9 @@ shinyUI(fluidPage(
   
   # load custom css stylesheet
   includeCSS("www/style.css"),
+  
+  # use shiny alert for messages
+  useShinyalert(),
   
   # load dashboard page layout
   dashboardPage(
@@ -58,28 +62,37 @@ shinyUI(fluidPage(
                 # begin collapsable control panel
                 fixedPanel(id = "controls", class = "collapse",
                            draggable = T, top = 130, left = "auto", right = 35, bottom = 20,
-                           width = 850, height = 850,
+                           width = 850, height = 900,
                            h4("Map tools"),
                            fluidRow(column(3,
-                                           selectInput("stusi", "Case Study", stusi,
+                                           selectInput("stusi", "Select Case Study", stusi,
                                                        selected = stusi[1], width = "200px")),
-                                    column(4,
+                                    column(3,
+                                           sliderInput("pcex", label = "Point Size",
+                                                       min = 1, max = 10, value = 5)),
+                                    column(4,# offset = 1,
+                                           fileInput("geojson", "Upload Custom Geometry (.geojson)",
+                                              accept = ".geojson")),
+                                    column(1,
+                                           actionButton('plt.geom', label = 'Show Geometry',
+                                                        style = "margin-top: 25px;" ))
+                                    # column(4,
+                                    #        sliderInput("pcex", label = "Point Size",
+                                    #                    min = 0, max = 100, value = 100))
+                           ),
+                           h4("Time series tools"),
+                           fluidRow(column(3,
                                            dateInput('date',
                                                      label = 'Date of event',
                                                      value = Sys.Date())),
                                     column(4,
+                                           actionButton('sub.offset', label = 'Subtr. Offset')),
+                                    column(5,
                                            selectInput('add.trend', 'Add Trendline',
                                                        choices = c('Connect MP' = 'ctrend',
                                                                    'Linear Trend' = 'ltrend',
                                                                    '2nd Order Polynomial Trend' = 'ptrend'), 
                                                        selected = 'ctrend'))
-                           ),
-                           h4("Time series tools"),
-                           fluidRow(column(3,
-                                           selectInput('event.marker', label = 'Event Marker',
-                                                       event, selected = event[1], width = "200px")),
-                                    column(4,
-                                           actionButton('sub.offset', label = 'Subtr. Offset'))
                                     ),
                            plotOutput("psts", height = 600, width = 800),
                            fluidRow(verbatimTextOutput("Click_text")) # end control panel inputs/outputs
