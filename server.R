@@ -345,6 +345,102 @@ observeEvent(input$sub.offset, {
         box(which = "plot")
       })}
 })
+#######################Baseline Plot#####################
 
+observe({
+  #date input
+  in.bl.info <- input$bl.file
+  in.bl.temp <- input$bl.temp
+  in.bl.spat <- input$bl.spat
+  
+  dat <- read.csv(paste("baseline_info/", in.bl.info, ".csv", sep = ""))
+  #dat <- read.csv(paste("baseline_info/", "baseline_test", ".csv", sep = ""))
+  
+  if(input$blopt == "ps.a"){
+    pstab.i <- abs(dat$PerpBaseline.m.) <= in.bl.spat & abs(dat$TempBaseline.days.) <= in.bl.temp
+    #pstab.i <- dat$PerpBaseline.m. <= 200 & dat$TempBaseline.days. <= 48
+    pstab <- dat[pstab.i, ]
+    ##info text
+    supprime <- substr(dat$Product[1], 18, 25)
+    out.bl.text <- paste("The ", nrow(dat), " images were combined to ", nrow(pstab)-1,
+                         " interferograms, using ", in.bl.spat, " m ",
+                         "and ",
+                         in.bl.temp, " days as thresholds.", 
+                         " The prime image is from ",
+                         supprime, ".", sep = "")
+    
+    output$bl.plot <- renderPlot({
+      ##plot PS combinations
+      plot(dat$PerpBaseline.m. ~ dat$TempBaseline.days.,
+           xlab = "temporal baseline [days]",
+           ylab = "perpendicular baseline [m]",
+           type = "n")
+      
+      for(i in 2:nrow(pstab)){
+        x.cord <- c(pstab$TempBaseline.days.[c(1, i)])
+        y.cord <- c(pstab$PerpBaseline.m.[c(1, i)])
+        lines(y.cord ~ x.cord, col = "grey80")
+      }
+      
+      points(dat$PerpBaseline.m. ~ dat$TempBaseline.days.,
+             pch = 19, col = "orangered")
+      points(dat$PerpBaseline.m.[1] ~ dat$TempBaseline.days.[1],
+             pch = 19, col = "royalblue1")
+    })
+    #render output text
+    output$bl.text <- renderText({out.bl.text})
+  }else{
+  #####SBAS Plot######
+  tbase <-
+    dat$TempBaseline.days. %>%
+    dist %>%
+    as.matrix 
+  tbase <- tbase <= in.bl.temp
+  #tbase <- tbase <= 48
+  tbase <- lower.tri(tbase)*tbase
+  
+  ##perp baseline
+  pbase <-
+    dat$PerpBaseline.m. %>%
+    dist %>%
+    as.matrix 
+  pbase <- pbase <= in.bl.spat
+  #pbase <- pbase <= 200
+  pbase <- lower.tri(pbase)*pbase
+  sbas.base <- pbase*tbase
+  
+  sbas.base <- which(sbas.base == 1, arr.ind = T)
+  
+  ##info text
+  supprime <- substr(dat$Product[1], 18, 25)
+  out.bl.text <- paste("The ", nrow(dat), " images were combined to ", nrow(sbas.base),
+                       " interferograms, using ", in.bl.spat, " m ",
+                       "and ",
+                       in.bl.temp, " days as thresholds.", 
+                       " The prime image is from ",
+                       supprime, ".", sep = "")
+  
+  output$bl.plot <- renderPlot({
+    ##plot sbas combinations
+    plot(dat$PerpBaseline.m. ~ dat$TempBaseline.days.,
+         xlab = "temporal baseline [days]",
+         ylab = "perpendicular baseline [m]",
+         type = "n")
+
+    for(i in 1:nrow(sbas.base)){
+      x.cord <- c(dat$TempBaseline.days.[sbas.base[i,1:2]])
+      y.cord <- c(dat$PerpBaseline.m.[sbas.base[i,1:2]])
+      lines(y.cord ~ x.cord, col = "grey80")
+    }
+    
+    points(dat$PerpBaseline.m. ~ dat$TempBaseline.days.,
+           pch = 19, col = "orangered")
+    points(dat$PerpBaseline.m.[1] ~ dat$TempBaseline.days.[1],
+           pch = 19, col = "royalblue1")
+  })
+  #render output text
+  output$bl.text <- renderText({out.bl.text})
+ }
+})
 # end of server function
 }

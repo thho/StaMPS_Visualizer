@@ -100,7 +100,59 @@ shinyUI(fluidPage(
         # start manual tab item
         tabItem(tabName = "manual",
                 includeMarkdown("www/manual.md")
-        ) # end manual tab item
+        ), # end manual tab item
+        tabItem(tabName = "blplot",
+                fluidPage(
+                  
+                  #title
+                  titlePanel("Baseline Plot"),
+                  
+                  #panel layout with input and output defs
+                  sidebarLayout(
+                    
+                    #sidebar panel for inputs
+                    sidebarPanel(
+                      
+                      selectInput(inputId = "bl.file",
+                                  label = "Select Baseline Table from SNAP",
+                                  choices = bl.info,
+                                  selected = bl.info[1]),
+                      #select SBAS or PS plot
+                      radioButtons(inputId =  "blopt", 
+                                   label = "DInSAR Approach:",
+                                   choiceNames = list(
+                                     "Persistent Scatterer PS", "Small BAseline Analysis SBAS"),
+                                   choiceValues = list(
+                                     "ps.a", "sbas.a"),
+                                   selected = "ps.a"),
+                      
+                      #input slider for temporal baseline
+                      sliderInput(inputId = "bl.temp",
+                                  label = "Temporal Baseline Threshold",
+                                  min = 1,
+                                  max = 365,
+                                  value = 48,
+                                  step = 1),
+                      
+                      #input slider for spatial baseline
+                      sliderInput(inputId = "bl.spat",
+                                  label = "Perpendicular Baseline Threshold",
+                                  min = 1,
+                                  max = 200,
+                                  value = 200,
+                                  step = 1)  
+                      
+                    ),
+                    
+                    #main panel with bl plot
+                    mainPanel(
+                      
+                      #output baseline plot
+                      plotOutput(outputId = "bl.plot"),
+                      fluidRow(verbatimTextOutput("bl.text"))
+                    )
+                  )
+                ))
       ) # end body items
     ) # end dashboard body 
   ) # end dashboard page

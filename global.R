@@ -63,8 +63,19 @@ event <- c("---", event)
 #tidy up
 rm(dat)
 
-library(leaflet)
-#load event marker icon
-event.icon <- makeIcon("./icons/event_marker_pin.png",
-                       iconWidth = 15,
-                       iconHeight = 25)
+##########################
+
+#################
+##Baseline Plot##
+#################
+
+##in Linux use this to prepare the SNAP export
+#sed 's/?/0/g' stack_all_baselines.csv | sed 's/ //g'
+
+#looking for baseline info csv files
+dat.path <- list.files("baseline_info/", pattern = ".csv")
+
+str.rev <- function(x){sapply(lapply(strsplit(x, NULL), rev), paste, collapse = "")}
+bl.info <- str.rev(dat.path)
+bl.info <- substr(bl.info, 5, 100)
+bl.info <- str.rev(bl.info)
