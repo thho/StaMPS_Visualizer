@@ -70,10 +70,10 @@ shinyUI(fluidPage(
                                            uiOutput("stusi")
                                            ),
                                     column(3,
-                                           sliderInput("pcex", label = "Point Size",
+                                           sliderInput("pcex", label = "Point size",
                                                        min = 1, max = 10, value = 5)),
                                     column(4,
-                                           fileInput("geojson", "Upload Custom Geometry (.geojson)",
+                                           fileInput("geojson", "Upload custom geometry (.geojson)",
                                               accept = ".geojson"))
                            ),
                            h4("Time series tools"),
@@ -82,13 +82,13 @@ shinyUI(fluidPage(
                                                      label = 'Date of event',
                                                      value = Sys.Date())),
                                     column(4,
-                                           selectInput('add.trend', 'Add Trendline',
+                                           selectInput('add.trend', 'Add trendline',
                                                        choices = c('Connect MP' = 'ctrend',
-                                                                   'Linear Trend' = 'ltrend',
-                                                                   '2nd Order Polynomial Trend' = 'ptrend'), 
+                                                                   'Linear trend' = 'ltrend',
+                                                                   '2nd order polynomial trend' = 'ptrend'), 
                                                        selected = 'ctrend')),
                                     column(2,
-                                           actionButton('sub.offset', label = 'Subtr. Offset',
+                                           actionButton('sub.offset', label = 'Subtr. offset',
                                                         style = "margin-top: 25px;"))#,
                                     #column(3,
                                      #      actionButton('add.ts', label = 'Add point to TS-Selection',
@@ -121,7 +121,7 @@ shinyUI(fluidPage(
                                   selected = bl.info[1]),
                       # select SBAS or PS plot
                       radioButtons(inputId =  "blopt", 
-                                   label = "DInSAR Approach:",
+                                   label = "DInSAR approach:",
                                    choiceNames = list(
                                      "Persistent Scatterer PS", "Small BAseline Analysis SBAS"),
                                    choiceValues = list(

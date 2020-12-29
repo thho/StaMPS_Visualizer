@@ -105,7 +105,7 @@ function(input, output, session) {
 ## Interactive Map ###########################################
   output$stusi <- renderUI({
     lapply(1, function(x) {
-      selectInput("stusi", "Select Case Study", stusi,
+      selectInput("stusi", "Select case study", stusi,
                   selected = stusi[1], width = "200px")
     })
   })
@@ -170,7 +170,7 @@ function(input, output, session) {
                    inputId = "ex.max.n.point")
         output$stusi <- renderUI({
           lapply(1, function(x) {
-            selectInput("stusi", "Select Case Study", stusi,
+            selectInput("stusi", "Select case study", stusi,
                         selected = stusi[1], width = "200px")
           })
         })
@@ -343,7 +343,7 @@ observeEvent(input$blopt, {
     # dynamic Input for temp baseline in PS mode
     output$bl.temp <- renderUI({
       lapply(1, function(x) {
-        sliderInput(inputId = "bl.temp", label = "Temporal Baseline Threshold",
+        sliderInput(inputId = "bl.temp", label = "Temporal baseline threshold",
                     min = 1, max = 1000, value = 500)
       })
     })
