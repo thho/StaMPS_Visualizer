@@ -65,8 +65,10 @@ shinyUI(fluidPage(
                            width = 850, height = 900,
                            h4("Map tools"),
                            fluidRow(column(3,
-                                           selectInput("stusi", "Select Case Study", stusi,
-                                                       selected = stusi[1], width = "200px")),
+                                           #selectInput("stusi", "Select Case Study", stusi,
+                                                       #selected = stusi[1], width = "200px")
+                                           uiOutput("stusi")
+                                           ),
                                     column(3,
                                            sliderInput("pcex", label = "Point Size",
                                                        min = 1, max = 10, value = 5)),

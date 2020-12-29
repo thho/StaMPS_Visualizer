@@ -15,12 +15,6 @@ h1, h2, h3, h4 { font-weight: 400; }
   height: calc(100vh - 80px) !important;  
 }
 
-/* map control panel
-.panel-collapse{
-  max-height: 200px;
-  overflow-y: auto;
-} */
-
 #controls {
   /* appearance */
   background-color: white;
@@ -36,5 +30,6 @@ h1, h2, h3, h4 { font-weight: 400; }
 /* map control panel container box */
 #cbox {
   /* appearance */
+  /* this is pretty sloppy, try to find a transparanet command */
   background-color: rgba(0,0,0,0);
 }
