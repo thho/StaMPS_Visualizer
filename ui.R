@@ -38,10 +38,10 @@ shinyUI(fluidPage(
                        "</table>",
                        "<br>")),
                        menuItem("Visualizer", tabName = "vismap", icon = icon("map marked alt")),
-                       menuItem("TS Explorer", tabName = "tsexp", icon = icon("chart-line")),
+                       #menuItem("TS Explorer", tabName = "tsexp", icon = icon("chart-line")),
                        menuItem("Baseline Plot", tabName = "blplot", icon = icon("project-diagram")),
-                       menuItem("Data Manager", tabName = "datman", icon = icon("folder-open")),
-                       menuItem("Explanation", tabName = "expl", icon = icon("comment")),
+                       #menuItem("Data Manager", tabName = "datman", icon = icon("folder-open")),
+                       #menuItem("Explanation", tabName = "expl", icon = icon("comment")),
                        menuItem("Manual", tabName = "manual", icon = icon("book-open")),
                        #menuItem("Literature", tabName = "lit", icon = icon("book")),
                        menuItem("Cite", tabName = "cite", icon = icon("graduation-cap"))
@@ -104,20 +104,20 @@ shinyUI(fluidPage(
         tabItem(tabName = "blplot",
                 fluidPage(
                   
-                  #title
+                  # title
                   titlePanel("Baseline Plot"),
                   
-                  #panel layout with input and output defs
+                  # panel layout with input and output defs
                   sidebarLayout(
                     
-                    #sidebar panel for inputs
+                    # sidebar panel for Baseline Plot inputs
                     sidebarPanel(
                       
                       selectInput(inputId = "bl.file",
-                                  label = "Select Baseline Table from SNAP",
+                                  label = "Select table with baseline data",
                                   choices = bl.info,
                                   selected = bl.info[1]),
-                      #select SBAS or PS plot
+                      # select SBAS or PS plot
                       radioButtons(inputId =  "blopt", 
                                    label = "DInSAR Approach:",
                                    choiceNames = list(
@@ -126,17 +126,22 @@ shinyUI(fluidPage(
                                      "ps.a", "sbas.a"),
                                    selected = "ps.a"),
                       
-                      #input slider for temporal baseline
-                      sliderInput(inputId = "bl.temp",
-                                  label = "Temporal Baseline Threshold",
-                                  min = 1,
-                                  max = 365,
-                                  value = 48,
-                                  step = 1),
+                      # static input slider for temporal baseline
+                      # sliderInput(inputId = "bl.temp",
+                      #             label = "Temporal Baseline Threshold",
+                      #             min = 1,
+                      #             max = 365,
+                      #             value = 48,
+                      #             step = 1),
+                      # 
                       
-                      #input slider for spatial baseline
+                      # dynamic input slider for PS SBAS option
+                      uiOutput("bl.temp"),
+                      
+                      
+                      # input slider for spatial baseline
                       sliderInput(inputId = "bl.spat",
-                                  label = "Perpendicular Baseline Threshold",
+                                  label = "Perpendicular baseline threshold",
                                   min = 1,
                                   max = 200,
                                   value = 200,
@@ -144,10 +149,9 @@ shinyUI(fluidPage(
                       
                     ),
                     
-                    #main panel with bl plot
+                    # main panel for Baseline Plot tab
                     mainPanel(
-                      
-                      #output baseline plot
+                      # output baseline plot
                       plotOutput(outputId = "bl.plot"),
                       fluidRow(verbatimTextOutput("bl.text"))
                     )

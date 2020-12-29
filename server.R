@@ -6,11 +6,7 @@ library(rgeos)
 library(rgdal)
 
 function(input, output, session) {
-  
-  #make stusiBy accessible outside observeEvent
-  #stusiBy <- NULL
 
-  #stusitscBy <- NULL
   makeReactiveBinding("stusitscBy")
   psts <- NULL
   
@@ -101,23 +97,23 @@ function(input, output, session) {
   
   # Create the map
   
-  #in order to add WMS tiels, see the comments below
+  # in order to add WMS tiels, see the comments below
     output$map <- renderLeaflet({
     leaflet(options = leafletOptions(preferCanvas = TRUE,
                                      zoomControl = FALSE)) %>%
         addTiles(group = "OSM Map") %>%
         addProviderTiles('Esri.WorldImagery',
                          group = "ESRI World Satellite") %>%
-        #uncomment the following lines in order to add WMS tiels and config them to your needs
-        #here is a example of a WMS url to some well known services
-        #https://stackoverflow.com/questions/9394190/leaflet-map-api-with-google-satellite-layer
+        # uncomment the following lines in order to add WMS tiels and config them to your needs
+        # here is a example of a WMS url to some well known services
+        # https://stackoverflow.com/questions/9394190/leaflet-map-api-with-google-satellite-layer
         # addWMSTiles("https://url/to/WMS",
         #   layers = "0",
         #   group = "WMS Tiles",
         #   options = WMSTileOptions(format = "image/png", transparent = F),
         #   attribution = "a propper attribution to the service") %>%
         addLayersControl(
-          baseGroups = c("ESRI World Satellite", "OSM Map"), #add the "WMS Tiles" string defined above with group = to the list 
+          baseGroups = c("ESRI World Satellite", "OSM Map"), # add the "WMS Tiles" string defined above with group = to the list 
           overlayGroups = c("Measurement Points", "Custom Geometry"),
           options = layersControlOptions(collapsed = T),
           position = "topleft") %>%
@@ -141,10 +137,10 @@ function(input, output, session) {
     colnum <- colorNumeric(colramp,
                            domain = c(min(ps.loc[[stusi.ind]]$disp),
                                       max(ps.loc[[stusi.ind]]$disp)))
-    #show PS on map
+    # show PS on map
     leafletProxy("map", data = ps.loc[[stusi.ind]]) %>%
       clearGroup("Measurement Points") %>%
-      #add PS circles with color ramp
+      # add PS circles with color ramp
       addCircleMarkers(ps.loc[[stusi.ind]]$lon,
                        ps.loc[[stusi.ind]]$lat,
                        layerId = ps.loc[[stusi.ind]]$uid,
@@ -159,7 +155,7 @@ function(input, output, session) {
   })
   
   observe({
-    #prepare PS stusi data
+    # prepare PS stusi data
     stusiBy <<- input$stusi
     stusi.ind <- which(stusi == stusiBy)
     disp <- ps.loc[[stusi.ind]]$disp
@@ -167,10 +163,10 @@ function(input, output, session) {
     colnum <- colorNumeric(colramp,
                            domain = c(min(ps.loc[[stusi.ind]]$disp),
                                       max(ps.loc[[stusi.ind]]$disp)))
-    #show PS on map
+    # show PS on map
     leafletProxy("map", data = ps.loc[[stusi.ind]]) %>%
       clearGroup("Measurement Points") %>%
-      #add PS circles with color ramp
+      # add PS circles with color ramp
       addCircleMarkers(ps.loc[[stusi.ind]]$lon,
                        ps.loc[[stusi.ind]]$lat,
                        layerId = ps.loc[[stusi.ind]]$uid,
@@ -191,7 +187,7 @@ function(input, output, session) {
   })
   
   observe({
-     #upload and show custom geometry
+     # upload and show custom geometry
      infile <- input$geojson
      ext <- tools::file_ext(infile$datapath)
      req(infile)
@@ -225,16 +221,16 @@ function(input, output, session) {
 ##################plot TS for specific MP
 
 observe({
-  #date input
+  # date input
   in.date.event <- input$date
   orig.date <- as_date("0000-01-01")
   date.event <- as.numeric(in.date.event - orig.date)
-  #stusi input
+  # stusi input
   stusi.ind <- which(stusi == stusiBy)
-  #marker input
+  # marker input
   click.map <<- input$map_marker_click
   if(is.null(click.map)){
-    #create plot
+    # create plot
     output$psts <- renderPlot({
       plot(1, 0, type = "n", axes = FALSE,
            ylab = c(""),
@@ -250,7 +246,7 @@ observe({
       last.click.id <<- click.map$id
       text <- paste('You have selected point', click.map$id, 'from case study', stusiBy, sep = ' ' )
       psts <<- ps.loc[[stusi.ind]][click.map$id, 5:ncol(ps.loc[[stusi.ind]])]
-      #create plot
+      # create plot
       output$psts <- renderPlot({
         plot(t(psts) ~ dates.days[[stusi.ind]], type = "n",
              ylab = "LOS displacement [mm]", xlab ="Date",
@@ -286,7 +282,7 @@ observe({
                col = "red")
         box(which = "plot")
       })
-      #render output text
+      # render output text
       output$Click_text <- renderText({text})
     }
   }
@@ -296,11 +292,11 @@ observe({
 ##################plot subtracted offset TS for specific MP
 
 observeEvent(input$sub.offset, {
-  #date input
+  # date input
   in.date.event <- input$date
   orig.date <- as_date("0000-01-01")
   date.event <- as.numeric(in.date.event - orig.date)
-  #stusi input
+  # stusi input
   stusi.ind <- which(stusi == stusiBy)
   if(is.null(click.map) | is.null(psts)){
     shinyalert("No TS selected",
@@ -308,7 +304,7 @@ observeEvent(input$sub.offset, {
                type = "error")}else{
       offset <- psts[1,1]
       psts.off <- psts - offset
-      #create plot
+      # create plot
       output$psts <- renderPlot({
         plot(t(psts.off) ~ dates.days[[stusi.ind]], type = "n",
              ylab = "cumulative LOS displacement [mm]", xlab ="Date",
@@ -346,21 +342,44 @@ observeEvent(input$sub.offset, {
       })}
 })
 #######################Baseline Plot#####################
+# TODO: Baseline and image combination report for export
+# TODO: Export plot as .svg
+
+observeEvent(input$blopt, {
+  if(input$blopt == "ps.a"){
+    # dynamic Input for temp baseline in PS mode
+    output$bl.temp <- renderUI({
+      lapply(1, function(x) {
+        sliderInput(inputId = "bl.temp", label = "Temporal Baseline Threshold",
+                    min = 1, max = 1000, value = 500)
+      })
+    })
+  }else{
+      # dynamic Input for temp baseline in SBAS mode
+      output$bl.temp <- renderUI({
+        lapply(1, function(x) {
+          sliderInput(inputId = "bl.temp", label = "Temporal baseline threshold",
+                      min = 1, max = 365, value = 48)
+        })
+      })
+    }
+  })
 
 observe({
-  #date input
+  # inputs
   in.bl.info <- input$bl.file
   in.bl.temp <- input$bl.temp
   in.bl.spat <- input$bl.spat
   
-  dat <- read.csv(paste("baseline_info/", in.bl.info, ".csv", sep = ""))
-  #dat <- read.csv(paste("baseline_info/", "baseline_test", ".csv", sep = ""))
-  
+  dat <- read.csv(paste("input/baseline_info/", in.bl.info, ".csv", sep = ""))
+  # TODO: check input file if 1 row is prime image by 0 baseline info
+  # TODO: check if input is in general the right format
   if(input$blopt == "ps.a"){
+    
+        # subset data for baseline thresholds
     pstab.i <- abs(dat$PerpBaseline.m.) <= in.bl.spat & abs(dat$TempBaseline.days.) <= in.bl.temp
-    #pstab.i <- dat$PerpBaseline.m. <= 200 & dat$TempBaseline.days. <= 48
     pstab <- dat[pstab.i, ]
-    ##info text
+    # info text
     supprime <- substr(dat$Product[1], 18, 25)
     out.bl.text <- paste("The ", nrow(dat), " images were combined to ", nrow(pstab)-1,
                          " interferograms, using ", in.bl.spat, " m ",
@@ -370,7 +389,7 @@ observe({
                          supprime, ".", sep = "")
     
     output$bl.plot <- renderPlot({
-      ##plot PS combinations
+      # plot PS combinations
       plot(dat$PerpBaseline.m. ~ dat$TempBaseline.days.,
            xlab = "temporal baseline [days]",
            ylab = "perpendicular baseline [m]",
@@ -387,31 +406,30 @@ observe({
       points(dat$PerpBaseline.m.[1] ~ dat$TempBaseline.days.[1],
              pch = 19, col = "royalblue1")
     })
-    #render output text
+    # render output text
     output$bl.text <- renderText({out.bl.text})
   }else{
   #####SBAS Plot######
+  # temporal baseline thresholding
   tbase <-
     dat$TempBaseline.days. %>%
     dist %>%
     as.matrix 
   tbase <- tbase <= in.bl.temp
-  #tbase <- tbase <= 48
   tbase <- lower.tri(tbase)*tbase
   
-  ##perp baseline
+  # perp baseline thresholding
   pbase <-
     dat$PerpBaseline.m. %>%
     dist %>%
     as.matrix 
   pbase <- pbase <= in.bl.spat
-  #pbase <- pbase <= 200
   pbase <- lower.tri(pbase)*pbase
   sbas.base <- pbase*tbase
   
   sbas.base <- which(sbas.base == 1, arr.ind = T)
   
-  ##info text
+  # info text
   supprime <- substr(dat$Product[1], 18, 25)
   out.bl.text <- paste("The ", nrow(dat), " images were combined to ", nrow(sbas.base),
                        " interferograms, using ", in.bl.spat, " m ",
@@ -421,7 +439,7 @@ observe({
                        supprime, ".", sep = "")
   
   output$bl.plot <- renderPlot({
-    ##plot sbas combinations
+    # plot SBAS combinations
     plot(dat$PerpBaseline.m. ~ dat$TempBaseline.days.,
          xlab = "temporal baseline [days]",
          ylab = "perpendicular baseline [m]",
@@ -438,7 +456,7 @@ observe({
     points(dat$PerpBaseline.m.[1] ~ dat$TempBaseline.days.[1],
            pch = 19, col = "royalblue1")
   })
-  #render output text
+  # render output text
   output$bl.text <- renderText({out.bl.text})
  }
 })
