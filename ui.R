@@ -6,9 +6,9 @@
 library(leaflet)
 library(shinydashboard)
 library(shinycssloaders)
-library(shinyBS)
-library(shinyalert)
-library(lubridate)
+#library(shinyBS)
+#library(shinyalert)
+#library(lubridate)
 
 # prepare UI
 shinyUI(fluidPage(
