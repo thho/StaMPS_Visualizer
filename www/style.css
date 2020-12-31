@@ -15,6 +15,7 @@ h1, h2, h3, h4 { font-weight: 400; }
   height: calc(100vh - 80px) !important;  
 }
 
+/* the class "controls" is definde in ui.R */
 #controls {
   /* appearance */
   background-color: white;

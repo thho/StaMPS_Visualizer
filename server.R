@@ -5,7 +5,6 @@ library(shinyalert)
 library(leaflet)
 library(colorRamps)
 library(lubridate)
-#library(rgeos)
 library(rgdal)
 library(data.table)
 

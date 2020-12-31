@@ -6,9 +6,7 @@
 library(leaflet)
 library(shinydashboard)
 library(shinycssloaders)
-#library(shinyBS)
-#library(shinyalert)
-#library(lubridate)
+library(shinyalert)
 
 # prepare UI
 shinyUI(fluidPage(
@@ -42,6 +40,7 @@ shinyUI(fluidPage(
                        menuItem("Baseline Plot", tabName = "blplot", icon = icon("project-diagram")),
                        #menuItem("Data Manager", tabName = "datman", icon = icon("folder-open")),
                        #menuItem("Explanation", tabName = "expl", icon = icon("comment")),
+                       #menuItem("Settings", tabName = "settings", icon = icon("sliders-h")),
                        menuItem("Manual", tabName = "manual", icon = icon("book-open")),
                        #menuItem("Literature", tabName = "lit", icon = icon("book")),
                        menuItem("Cite", tabName = "cite", icon = icon("graduation-cap"))
@@ -123,7 +122,7 @@ shinyUI(fluidPage(
                       radioButtons(inputId =  "blopt", 
                                    label = "DInSAR approach:",
                                    choiceNames = list(
-                                     "Persistent Scatterer PS", "Small BAseline Analysis SBAS"),
+                                     "Persistent Scatterer PS", "Small BAseline Subset SBAS"),
                                    choiceValues = list(
                                      "ps.a", "sbas.a"),
                                    selected = "ps.a"),
