@@ -37,7 +37,7 @@ sudo gdebi rstudio-1.3.1093-amd64.deb
 
 **Windows**
 
-Download R https://cran.r-project.org/bin/windows/base/ and run the ```.exe```.
+Download R https://cran.r-project.org/bin/windows/base/ and run the ```.exe```
 
 Download RStudio https://rstudio.com/products/rstudio/download/#download and run the ```.exe```
 
@@ -46,8 +46,9 @@ Download RStudio https://rstudio.com/products/rstudio/download/#download and run
 Since version 3.0 StaMPS-Visualizer is managed as a *Rproject* with ```renv```. ```renv``` [is a tool to create reproducible environments of R packages](https://rstudio.github.io/renv/index.html).
 
 * clone this repository 
-* open the ```Stamps_Visualizer.Rproj``` file with Rstudio
-* run ```renv::restore()``` in the R Console to restore the environment
+* open the ```StaMPS_Visualizer.Rproj``` file with Rstudio
+* run ```insatll.packages("renv")``` in the R Console
+* run ```renv::restore()``` in the R Console to restore the complete environment (this might take some time)
 * go to File --> Open File... and open ```ui.R```
 * click on **Run App** in the upper left panel in the upper right corner
 
