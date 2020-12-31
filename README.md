@@ -75,9 +75,26 @@ in order to start the Visualizer, open the ```ui.R``` script in RStudio and clic
 
 The StaMPS-Visualizer is licensed under a [creative commons attribution license](https://github.com/thho/StaMPS_Visualizer/blob/master/LICENSE.md)
 
-## Citing the Application *StaMPS-Visualizer*
+## Citing *StaMPS-Visualizer*
 
-The application is part of a [master thesis at the Department of Geography, Bonn University](https://doi.org/10.13140/RG.2.2.35085.59362). To cite the application, cite the thesis including the application:
+Since version 3.0 StaMPS-Visualizer is published as software on Zenodo:
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4407188.svg)](https://doi.org/10.5281/zenodo.4407188)
+
+```
+@software{thorsten_hoeser_2020_4407188,
+  author       = {Thorsten Hoeser},
+  title        = {StaMPS\_Visualizer},
+  month        = dec,
+  year         = 2020,
+  publisher    = {Zenodo},
+  version      = {v3.0},
+  doi          = {10.5281/zenodo.4407188},
+  url          = {https://doi.org/10.5281/zenodo.4407188}
+}
+```
+
+The original version was published as part of a [master thesis at the Department of Geography, Bonn University](https://doi.org/10.13140/RG.2.2.35085.59362).
 
 Bibtex:
 

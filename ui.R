@@ -102,6 +102,10 @@ shinyUI(fluidPage(
         tabItem(tabName = "manual",
                 includeMarkdown("www/manual.md")
         ), # end manual tab item
+        # start manual tab item
+        tabItem(tabName = "cite",
+                includeMarkdown("www/cite.md")
+        ), # end manual tab item
         tabItem(tabName = "blplot",
                 fluidPage(
                   
