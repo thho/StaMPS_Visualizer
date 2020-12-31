@@ -1,6 +1,6 @@
 # StaMPS-Visualizer
 
-![](https://github.com/thho/StaMPS_Visualizer/blob/master/stamps_visualizer21_preview.png "StaMPS-Visualizer 2.1 preview")
+![](https://github.com/thho/StaMPS_Visualizer/blob/master/preview30_map.png "StaMPS-Visualizer 3.0")
 
 A Shiny application for visualizing DInSAR results processed by [StaMPS/MTI](https://homepages.see.leeds.ac.uk/~earahoo/stamps/).
 
@@ -10,27 +10,71 @@ Further discussion about the application can be found in ESA's [Step-Forum](http
 
 An example of the app is currently available online, hosted with a free shinyapps.io account. Therefore it may be that the app is not accessible if all active hours per month are exhausted. To work with the app and adding your own data locally, download or clone the repo. [StaMPS-Visualizer example](https://thho.shinyapps.io/StaMPS_Visualizer/)
 
+## Installation
+
+You need R 3.6 or higher and RStudio
+
+**Linux**
+
+Tested on Ubuntu 20.04.1 LTS
+
+```
+# first install gdal libraries
+sudo apt update
+sudo apt install gdal-bin libgdal-dev -y
+
+# install R
+sudo apt update
+sudo apt install r-base gdebi-core -y
+
+# install RStudio
+# download RStudio
+# https://rstudio.com/products/rstudio/download/#download
+
+cd ~/Downloads
+sudo gdebi rstudio-1.3.1093-amd64.deb
+```
+
+**Windows**
+
+Download R https://cran.r-project.org/bin/windows/base/ and run the ```.exe```.
+
+Download RStudio https://rstudio.com/products/rstudio/download/#download and run the ```.exe```
+
+### Installation with renv (recommended)
+
+Since version 3.0 StaMPS-Visualizer is managed as a *Rproject* with ```renv```. ```renv``` [is a tool to create reproducible environments of R packages](https://rstudio.github.io/renv/index.html).
+
+* clone this repository 
+* open the ```Stamps_Visualizer.Rproj``` file with Rstudio
+* run ```renv::restore()``` in the R Console to restore the environment
+* go to File --> Open File... and open ```ui.R```
+* click on **Run App** in the upper left panel in the upper right corner
+
+### Manual installation of all packages
+
 To run the application locally, following packages are requiered:
 
 ```{r install-packages eval=FALSE}
 install.packages("leaflet")
 install.packages("lubridate")
 install.packages("shiny")
+install.packages("shinycssloaders")
+install.packages("shinyalert")
 install.packages("colorRamps")
+install.packages("rgdal")
+install.packages("data.table")
 ```
 
 Copy paste the code to your R console, or run the R script *install_packages.R*
 
-## Disclaimer
+in order to start the Visualizer, open the ```ui.R``` script in RStudio and click on **Run App** in the upper left panel in the upper right corner.
 
-<br/>
+## License
 
-*StaMPS-Visualizer* is a free application and comes with **absolutely no warranty**.
-
+The StaMPS-Visualizer is licensed under a [creative commons attribution license](https://github.com/thho/StaMPS_Visualizer/blob/master/LICENSE.md)
 
 ## Citing the Application *StaMPS-Visualizer*
-
-<br/>
 
 The application is part of a [master thesis at the Department of Geography, Bonn University](https://doi.org/10.13140/RG.2.2.35085.59362). To cite the application, cite the thesis including the application:
 
@@ -46,3 +90,11 @@ Bibtex:
   doi          = {10.13140/RG.2.2.35085.59362}
 }
 ```
+
+## Disclaimer
+
+<br/>
+
+*StaMPS-Visualizer* is a free application and comes with **absolutely no warranty**.
+
+<br/>
