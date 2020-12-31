@@ -2,6 +2,12 @@
 ###StaMPS-Visualizer global script###
 #####################################
 
+###################
+###load settings###
+###################
+
+settings <- readRDS("settings.RData")
+
 ####################
 ###Visualizer Map###
 ####################

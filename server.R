@@ -8,19 +8,15 @@ library(lubridate)
 library(rgdal)
 library(data.table)
 
-##################
-# prepare objects#
-##################
-
-psts <- NULL
-
-# max numbers of points to render by leaflet in the interactive map
-max.n.points <- 50000
+#################
+#prepare objects#
+#################
 
 # prepare color ramp
 colramp <- rev(matlab.like(10))
 
-# init stamps object
+# initialize empty objects
+psts <- NULL
 stamps <- NULL
 
 ####################
@@ -101,6 +97,41 @@ render.stamps <- function(pointsize = 5, setview = TRUE){
 
 function(input, output, session) {
 
+## Settings ##################################################
+  # render start settings texts
+  output$text.settings <- if(settings$defaultflag == TRUE){
+    renderText({paste("Values were initially loaded from default settings")})}else{
+      renderText({paste("Values were initially loaded from user settings")})}
+  
+  output$text.max.n.points <- if(settings$defaultflag == TRUE){
+    renderText({paste("Values are set to default: ", settings$max.n.points, sep = "")})}else{
+      renderText({paste("Value is set by user: ", settings$max.n.points, sep = "")})}
+  
+  # load default settings
+  observeEvent(input$load.def.settings, {
+    settings <<- list(default = settings$default,
+                     max.n.points = settings$default$max.n.points,
+                     defaultflag = settings$default$defaultflag)
+    output$text.max.n.points <- renderText({paste("Values are set to default: ", settings$max.n.points, sep = "")})
+    saveRDS(settings, "settings.RData")
+    output$text.settings <- renderText({paste("Values were loaded from default settings")})
+  })
+  
+  # change max.n.points
+  # change for current session
+  observeEvent(input$set.max.n.points, {
+    settings$max.n.points <<- input$select.max.n.points
+    settings$defaultflag <<- FALSE
+    output$text.max.n.points <- renderText({paste("Value is set by user: ", settings$max.n.points, sep = "")})
+  })
+  # change for current session and save to user settings session
+  observeEvent(input$save.max.n.points, {
+    settings$max.n.points <<- input$select.max.n.points
+    settings$defaultflag <<- FALSE
+    output$text.max.n.points <- renderText({paste("Value is set by user: ", settings$max.n.points, sep = "")})
+    saveRDS(settings, "settings.RData")
+  })
+  
 ## Interactive Map ###########################################
   output$stusi <- renderUI({
     lapply(1, function(x) {
@@ -151,22 +182,21 @@ function(input, output, session) {
     }else{
       # check the numbers of lines
       n.points <- nrow(data.table::fread(paste("input/stusi/", input$stusi, ".csv", sep = ""), select = 1L))
-      if(n.points <= max.n.points){
+      if(n.points <= settings$max.n.points){
         stamps <<- load.stamps(input$stusi)
         render.stamps(pointsize = input$pcex)
       }else{
         shinyalert(title = "Number of max points exceeded",
                    text = paste("You try to load ", n.points, " points where the max number of points is ",
-                                max.n.points, ". Continue to load all points might slow down and eventually crush the Visualizer. ",
-                                "Cancel to make a spatial subset or raise the number of maximum points. ",
-                                "For further instructions switch to the Manual tab.",
+                                settings$max.n.points, ". To raise the number of maximum points, go to Settings.",
                                 sep = ""),
-                   type = "input",
-                   inputType = "",
-                   showCancelButton = TRUE,
-                   showConfirmButton = TRUE,
-                   confirmButtonText = "Continue",
-                   inputId = "ex.max.n.point")
+                   type = "error"
+                   #inputType = "",
+                   #showCancelButton = TRUE,
+                   #showConfirmButton = TRUE,
+                   #confirmButtonText = "Continue",
+                   #inputId = "ex.max.n.point"
+                   )
         output$stusi <- renderUI({
           lapply(1, function(x) {
             selectInput("stusi", "Select case study", stusi,

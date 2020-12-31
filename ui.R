@@ -40,7 +40,7 @@ shinyUI(fluidPage(
                        menuItem("Baseline Plot", tabName = "blplot", icon = icon("project-diagram")),
                        #menuItem("Data Manager", tabName = "datman", icon = icon("folder-open")),
                        #menuItem("Explanation", tabName = "expl", icon = icon("comment")),
-                       #menuItem("Settings", tabName = "settings", icon = icon("sliders-h")),
+                       menuItem("Settings", tabName = "settings", icon = icon("sliders-h")),
                        menuItem("Manual", tabName = "manual", icon = icon("book-open")),
                        #menuItem("Literature", tabName = "lit", icon = icon("book")),
                        menuItem("Cite", tabName = "cite", icon = icon("graduation-cap"))
@@ -157,7 +157,38 @@ shinyUI(fluidPage(
                       fluidRow(verbatimTextOutput("bl.text"))
                     )
                   )
-                ))
+                )), # end baseline plot tab
+        tabItem(tabName = "settings",
+                includeMarkdown("www/settings.md"),
+                fluidRow(
+                column(2, actionButton("load.def.settings",
+                             label = "Load default settings"#,
+                             #icon = "archive"
+                             )),
+                column(4, verbatimTextOutput("text.settings")),
+                ),
+                includeMarkdown("www/settings_maxnpoints.md"),
+                fluidRow(
+                  column(2, numericInput(inputId = "select.max.n.points",
+                                         label = "max.n.points",
+                                         value = settings$max.n.points,
+                                         min = 1,
+                                         max = 500000,
+                                         width = "200px")),
+                  column(2, actionButton("set.max.n.points",
+                                         label = "Enable for current session",
+                                         style = "margin-top: 25px;"
+                                         #icon = "cogs"
+                                         )),
+                  column(2, actionButton("save.max.n.points",
+                                         label = "Save to user settings",
+                                         style = "margin-top: 25px;"
+                                         #icon = "user-cog"
+                                         )),
+                  column(3, verbatimTextOutput("text.max.n.points"),
+                         style = "margin-top: 25px;")
+                )
+              ) # end setting tab
       ) # end body items
     ) # end dashboard body 
   ) # end dashboard page
