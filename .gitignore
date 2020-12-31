@@ -4,3 +4,5 @@
 .Ruserdata
 .Rprofile
 input/stusi/large_test.csv
+input/stusi/50ktest.csv
+.dev
