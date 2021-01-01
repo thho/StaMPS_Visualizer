@@ -47,7 +47,7 @@ Since version 3.0 StaMPS-Visualizer is managed as a *Rproject* with ```renv```. 
 
 * clone this repository 
 * open the ```StaMPS_Visualizer.Rproj``` file with Rstudio
-* run ```insatll.packages("renv")``` in the R Console
+* run ```install.packages("renv")``` in the R Console
 * run ```renv::restore()``` in the R Console to restore the complete environment (this might take some time)
 * go to File --> Open File... and open ```ui.R```
 * click on **Run App** in the upper left panel in the upper right corner
