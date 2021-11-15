@@ -41,7 +41,7 @@ Download R https://cran.r-project.org/bin/windows/base/ and run the ```.exe```
 
 Download RStudio https://rstudio.com/products/rstudio/download/#download and run the ```.exe```
 
-### Installation with renv (recommended)
+### R package installation with renv
 
 Since version 3.0 StaMPS-Visualizer is managed as a *Rproject* with ```renv```. ```renv``` [is a tool to create reproducible environments of R packages](https://rstudio.github.io/renv/index.html).
 
@@ -51,26 +51,6 @@ Since version 3.0 StaMPS-Visualizer is managed as a *Rproject* with ```renv```. 
 * run ```renv::restore()``` in the R Console to restore the complete environment (this might take some time)
 * go to File --> Open File... and open ```ui.R```
 * click on **Run App** in the upper left panel in the upper right corner
-
-### Manual installation of all packages
-
-To run the application locally, following packages are requiered:
-
-```{r install-packages eval=FALSE}
-install.packages("leaflet")
-install.packages("lubridate")
-install.packages("shiny")
-install.packages("shinycssloaders")
-install.packages("shinyalert")
-install.packages("shinydashboard")
-install.packages("colorRamps")
-install.packages("rgdal")
-install.packages("data.table")
-```
-
-Copy paste the code to your R console, or run the R script *install_packages.R*
-
-in order to start the Visualizer, open the ```ui.R``` script in RStudio and click on **Run App** in the upper left panel in the upper right corner.
 
 ## License
 
